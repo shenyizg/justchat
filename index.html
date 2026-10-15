@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- Only the two script tags below (matching nonce) may run. This blocks inline event handlers that could
+     slip into rendered model output. connect-src is left open so any API endpoint can be used. -->
+<meta http-equiv="Content-Security-Policy" content="script-src 'nonce-justchat'; object-src 'none'; base-uri 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#ffffff">
@@ -10,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="JustChat">
 <title>JustChat</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f1f1f'/%3E%3Cpath d='M17 16h30a6 6 0 0 1 6 6v16a6 6 0 0 1-6 6H31l-10 8v-8h-4a6 6 0 0 1-6-6V22a6 6 0 0 1 6-6z' fill='%23fff'/%3E%3C/svg%3E">
-<script>
+<script nonce="justchat">
   // Apply the saved theme before first paint to avoid a flash.
   (function () {
     var t; try { t = localStorage.getItem('justchat-theme'); } catch (e) {}
@@ -62,11 +65,13 @@ main { position: relative; flex: 1; min-width: 0; display: flex; flex-direction:
 .chat-item { display: flex; align-items: center; gap: 2px; height: 36px; padding: 0 4px 0 10px; border-radius: 8px; cursor: pointer; }
 .chat-item:hover { background: var(--hover); }
 .chat-item.active { background: var(--bg-3); }
-.chat-item .t { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; }
+.chat-item .t { display: block; flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; text-align: left; }
 .chat-item.running .t::before { content: ""; display: inline-block; width: 6px; height: 6px; margin: 0 6px 2px 0; border-radius: 50%; background: var(--accent); }
 .chat-item .icon-btn { width: 26px; height: 26px; display: none; }
 .chat-item .icon-btn svg.i { width: 15px; height: 15px; }
-.chat-item:hover .icon-btn, .chat-item.active .icon-btn { display: inline-flex; }
+.chat-item.active .icon-btn, .chat-item:focus-within .icon-btn { display: inline-flex; }
+/* Only on real hover: iOS swallows the first tap when :hover changes what is displayed. */
+@media (hover: hover) { .chat-item:hover .icon-btn { display: inline-flex; } }
 .side-empty { padding: 8px 10px; font-size: 13px; color: var(--fg-3); }
 .side-foot { padding: 8px; padding-bottom: max(8px, env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
 .side-btn { display: flex; align-items: center; gap: 10px; width: 100%; height: 38px; padding: 0 10px; border-radius: 8px; font-size: 14px; }
@@ -184,7 +189,10 @@ dialog::backdrop { background: rgba(0,0,0,.4); }
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
 .field textarea { resize: vertical; line-height: 1.5; }
 .field .mono, .mono { font-family: var(--mono); font-size: 13px; }
-.field.check { flex-direction: row; align-items: center; gap: 8px; margin-top: 26px; color: var(--fg); }
+.secret:not(:focus) { -webkit-text-security: disc; }
+.field.check { flex-direction: row; align-items: center; gap: 8px; margin: 0; color: var(--fg); }
+.grid2 .field.check { margin: 26px 0 14px; }
+.field.check input:disabled + span { color: var(--fg-3); }
 .field.check input { width: 16px; height: 16px; margin: 0; }
 .field-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
@@ -226,8 +234,9 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
   body.side-open #overlay { display: block; position: fixed; inset: 0; z-index: 25; background: rgba(0,0,0,.35); }
   #msgs { padding: 4px 14px 20px; }
   footer { padding: 0 10px calc(8px + env(safe-area-inset-bottom)); }
-  input, select, textarea, .field input:not([type="checkbox"]), .field select, .field textarea { font-size: 16px; }
-  .chat-item.active .icon-btn { display: inline-flex; }
+  /* iOS zooms into any focused field under 16px */
+  input, select, textarea, .field input:not([type="checkbox"]), .field select, .field textarea,
+  .side-search input, #model-select, .field .mono { font-size: 16px; }
 }
 @media (hover: none) {
   /* Touch: show actions for the latest exchange, or for a message after tapping it. */
@@ -354,11 +363,16 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
     <label class="field"><span data-i18n="providerName"></span><input id="pv-name" autocomplete="off"></label>
     <label class="field"><span data-i18n="apiFormat"></span>
       <select id="pv-type"><option value="openai" data-i18n="openaiCompatible"></option><option value="anthropic">Anthropic</option></select></label>
-    <label class="field"><span data-i18n="baseUrl"></span><input id="pv-url" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false"><small class="hint" id="pv-endpoint"></small></label>
-    <label class="field"><span data-i18n="apiKey"></span><input id="pv-key" type="password" autocomplete="off" spellcheck="false"></label>
+    <label class="field"><span data-i18n="baseUrl"></span><input id="pv-url" type="url" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><small class="hint" id="pv-endpoint"></small></label>
+    <div class="field">
+      <label class="field check"><input id="pv-proxy" type="checkbox"><span data-i18n="useProxy"></span></label>
+      <small class="hint" id="pv-proxy-hint"></small>
+    </div>
+    <!-- Not type="password": password managers would treat this form as a login and interfere with it. -->
+    <label class="field"><span data-i18n="apiKey"></span><input id="pv-key" class="secret" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"></label>
     <div class="field">
       <div class="field-head"><span data-i18n="models"></span><button class="btn sm" id="pv-fetch" data-i18n="fetchModels"></button></div>
-      <textarea id="pv-models" class="mono" rows="4" autocapitalize="off" spellcheck="false" data-i18n-placeholder="modelsPlaceholder"></textarea>
+      <textarea id="pv-models" class="mono" rows="4" autocapitalize="off" autocorrect="off" spellcheck="false" data-i18n-placeholder="modelsPlaceholder"></textarea>
       <div class="picker" id="pv-picker" hidden>
         <input type="search" id="pv-filter" autocomplete="off" data-i18n-placeholder="filterModels">
         <div class="picker-list" id="pv-picker-list"></div>
@@ -366,8 +380,8 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
     </div>
     <details class="adv">
       <summary data-i18n="advanced"></summary>
-      <label class="field"><span data-i18n="extraHeaders"></span><textarea id="pv-headers" class="mono" rows="2" autocapitalize="off" spellcheck="false" placeholder='{"X-Custom-Header": "value"}'></textarea></label>
-      <label class="field"><span data-i18n="extraBody"></span><textarea id="pv-body" class="mono" rows="3" autocapitalize="off" spellcheck="false" placeholder='{"top_k": 20}'></textarea><small class="hint" data-i18n="extraHint"></small></label>
+      <label class="field"><span data-i18n="extraHeaders"></span><textarea id="pv-headers" class="mono" rows="2" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder='{"X-Custom-Header": "value"}'></textarea></label>
+      <label class="field"><span data-i18n="extraBody"></span><textarea id="pv-body" class="mono" rows="3" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder='{"top_k": 20}'></textarea><small class="hint" data-i18n="extraHint"></small></label>
     </details>
   </div>
   <div class="dlg-foot">
@@ -380,7 +394,7 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
 
 <dialog id="dlg-img"><img alt=""></dialog>
 <div class="toast" id="toast" role="status"></div>
-<script>
+<script nonce="justchat">
 'use strict';
 /*
  * JustChat - a minimal, single-file chat client for LLM APIs.
@@ -477,9 +491,14 @@ const I18N = {
     noModel: 'Select a model first',
     truncated: 'Output stopped: the max tokens limit was reached.', refused: 'The model declined to respond.',
     filtered: 'Output stopped by a content filter.', stopped: 'Stopped.',
-    networkError: 'Network error ({0}). Check the base URL and the server\'s CORS settings. A page served over HTTPS cannot call an HTTP API.',
+    networkError: 'Could not reach {0} ({1}). Check the base URL. If this API doesn\'t accept requests from web pages, open JustChat through serve.mjs and turn on "Send requests through this page\'s server" for this provider.',
     usage: '{0} in · {1} out', storageError: 'Could not save: {0}', storageMissing: 'Browser storage is unavailable. Nothing will be saved.',
     imageError: 'Could not read the image', version: 'JustChat {0} · Data stays in this browser',
+    useProxy: 'Send requests through this page\'s server',
+    proxyHint: 'For APIs that don\'t accept requests from browsers (CORS). Available because this page was opened through serve.mjs.',
+    proxyUnavailable: 'For APIs that don\'t accept requests from browsers (CORS). Open JustChat through serve.mjs to use it (see the README).',
+    proxyMissing: 'This provider is set to go through serve.mjs, but this page wasn\'t opened through serve.mjs. Open it through serve.mjs, or untick the option in the provider settings.',
+    viaProxy: 'relayed by serve.mjs',
   },
   zh: {
     newChat: '新对话', search: '搜索', settings: '设置', toggleSidebar: '切换侧边栏', model: '模型',
@@ -514,9 +533,14 @@ const I18N = {
     noModel: '请先选择模型',
     truncated: '输出已停止：达到最大 Token 数限制。', refused: '模型拒绝了此请求。',
     filtered: '输出被内容过滤器中止。', stopped: '已停止。',
-    networkError: '网络错误（{0}）。请检查 Base URL 和服务器的 CORS 设置；HTTPS 页面无法请求 HTTP 接口。',
+    networkError: '无法连接 {0}（{1}）。请检查 Base URL。如果这个 API 不接受网页直接请求，请通过 serve.mjs 打开 JustChat，并为该服务商开启「通过本页面的服务器转发请求」。',
     usage: '输入 {0} · 输出 {1}', storageError: '保存失败：{0}', storageMissing: '浏览器存储不可用，数据将不会被保存。',
     imageError: '无法读取图片', version: 'JustChat {0} · 数据仅保存在本浏览器',
+    useProxy: '通过本页面的服务器转发请求',
+    proxyHint: '用于不接受浏览器直接请求（CORS）的 API。当前页面是通过 serve.mjs 打开的，可以使用。',
+    proxyUnavailable: '用于不接受浏览器直接请求（CORS）的 API。需要通过 serve.mjs 打开 JustChat 才能使用（见 README）。',
+    proxyMissing: '该服务商设置为经 serve.mjs 转发，但当前页面不是通过 serve.mjs 打开的。请通过 serve.mjs 打开，或在服务商设置中取消该选项。',
+    viaProxy: '经 serve.mjs 转发',
   },
 };
 let L = I18N.en;
@@ -642,6 +666,7 @@ function normalizeProvider(p) {
     models: Array.isArray(p.models) ? [...new Set(p.models.map(String).filter(Boolean))] : [],
     headers: String(p.headers || ''),
     body: String(p.body || ''),
+    proxy: !!p.proxy,
   };
 }
 
@@ -771,7 +796,13 @@ const md = (() => {
   const isTableSep = line => /^ *\|? *:?-+:? *(\| *:?-+:? *)*\|? *$/.test(line);
   const isTableStart = (lines, i) => lines[i].includes('|') && i + 1 < lines.length && isTableSep(lines[i + 1]) &&
     splitRow(lines[i]).length === splitRow(lines[i + 1]).length;
-  const startsBlock = line => !!fenceStart(line) || /^ {0,3}(#{1,6}([ \t]|$)|>|\$\$|\\\[)/.test(line) || HR.test(line) || LIST.test(line);
+  // Whether a line ends the paragraph above it. As in CommonMark, only an ordered list starting at 1
+  // interrupts a paragraph, so a line like "2024. was a good year" stays text.
+  const startsBlock = line => {
+    if (fenceStart(line) || /^ {0,3}(#{1,6}([ \t]|$)|>|\$\$|\\\[)/.test(line) || HR.test(line)) return true;
+    const m = LIST.exec(line);
+    return !!m && (!/\d/.test(m[2]) || parseInt(m[2], 10) === 1);
+  };
 
   function codeBlock(code, lang) {
     return `<div class="code"><div class="code-head"><span>${escText(lang || 'text')}</span>` +
@@ -923,42 +954,50 @@ const md = (() => {
     return '';
   }
   const link = (href, html) => `<a href="${escAttr(href)}" target="_blank" rel="noopener noreferrer">${html}</a>`;
+  const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0' };
 
   function emphasis(s) {
     return s
-      .replace(/\*\*\*(?=\S)([^\n]*?\S)\*\*\*/g, '<strong><em>$1</em></strong>')
-      .replace(/\*\*(?=\S)([^\n]*?\S)\*\*/g, '<strong>$1</strong>')
-      .replace(/(^|[^\p{L}\p{N}_])__(?=\S)([^\n]*?\S)__(?![\p{L}\p{N}_])/gu, '$1<strong>$2</strong>')
+      .replace(/\*\*\*(?=\S)([\s\S]*?\S)\*\*\*/g, '<strong><em>$1</em></strong>')
+      .replace(/\*\*(?=\S)([\s\S]*?\S)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^\p{L}\p{N}_])__(?=\S)([\s\S]*?\S)__(?![\p{L}\p{N}_])/gu, '$1<strong>$2</strong>')
       .replace(/(^|[^*])\*(?=[^\s*])([^\n*]*?[^\s*])\*(?!\*)/g, '$1<em>$2</em>')
       .replace(/(^|[^\p{L}\p{N}_])_(?=[^\s_])([^\n_]*?[^\s_])_(?![\p{L}\p{N}_])/gu, '$1<em>$2</em>')
-      .replace(/~~(?=\S)([^\n]*?\S)~~/g, '<del>$1</del>');
+      .replace(/~~(?=\S)([\s\S]*?\S)~~/g, '<del>$1</del>');
   }
 
+  // Code, math, escapes and links are swapped for placeholders so later rules can't touch them. Each placeholder
+  // keeps its HTML and its plain text; attributes (href, src, alt) only ever get the escaped plain text.
   function inline(text) {
     const held = [];
-    const hold = html => `${held.push(html) - 1}`;
-    const math = (tex, display) => hold(`<span class="math${display ? ' math-block' : ''}">${escText(tex.trim())}</span>`);
+    const hold = (html, plain) => `\uE000${held.push({ html, plain }) - 1}\uE001`;
+    const plain = str => str.replace(/\uE000(\d+)\uE001/g, (_, k) => (held[k] ? plain(held[k].plain) : ''));
+    const math = (tex, display) => hold(`<span class="math${display ? ' math-block' : ''}">${escText(tex.trim())}</span>`, tex.trim());
     let s = text
       .replace(/(`+)([\s\S]*?[^`])\1(?!`)/g, (_, tick, code) => {
         code = code.replace(/\n/g, ' ');
         if (/^ .*[^ ].* $/.test(code)) code = code.slice(1, -1);
-        return hold(`<code>${escText(code)}</code>`);
+        return hold(`<code>${escText(code)}</code>`, code);
       })
-      .replace(/\\\$/g, () => hold('$'))
+      .replace(/\\\$/g, () => hold('$', '$'))
       .replace(/\$\$([\s\S]+?)\$\$/g, (_, tex) => math(tex, true))
       .replace(/\\\[([\s\S]+?)\\\]/g, (_, tex) => math(tex, true))
       .replace(/\\\(([\s\S]+?)\\\)/g, (_, tex) => math(tex))
       .replace(/\$(?![\s$])((?:[^$\n\\]|\\.)*?[^\s$\\])\$(?![\w$])/g, (_, tex) => math(tex))
-      .replace(/\\([!-/:-@[-`{-~])/g, (_, c) => hold(escText(c)))
-      .replace(/<(https?:\/\/[^\s<>]+)>/g, (_, url) => hold(link(url, escText(url))))
+      .replace(/\\([!-/:-@[-`{-~])/g, (_, c) => hold(escText(c), c))
+      .replace(/<(https?:\/\/[^\s<>]+)>/g, (all, url) => {
+        const href = safeUrl(plain(url));
+        return href ? hold(link(href, escText(plain(url))), url) : all;
+      })
       .replace(/!\[([^\]\n]*)\]\(\s*<?([^\s()<>]*(?:\([^\s()]*\)[^\s()<>]*)*)>?(?:\s+(?:"[^"\n]*"|'[^'\n]*'))?\s*\)/g, (all, alt, url) => {
-        const src = safeUrl(url, true);
-        return src ? hold(`<img src="${escAttr(src)}" alt="${escAttr(alt)}" loading="lazy">`) : hold(escText(alt));
+        const src = safeUrl(plain(url), true);
+        const text = plain(alt);
+        return src ? hold(`<img src="${escAttr(src)}" alt="${escAttr(text)}" loading="lazy">`, text) : hold(escText(text), text);
       })
       .replace(/\[((?:[^[\]\n]|\[[^[\]\n]*\])*)\]\(\s*<?([^\s()<>]*(?:\([^\s()]*\)[^\s()<>]*)*)>?(?:\s+(?:"[^"\n]*"|'[^'\n]*'))?\s*\)/g, (all, label, url) => {
-        const href = safeUrl(url);
+        const href = safeUrl(plain(url));
         const html = emphasis(escText(label));
-        return hold(href ? link(href, html) : html);
+        return hold(href ? link(href, html) : html, label);
       })
       .replace(/\bhttps?:\/\/[\w\-.~:/?#[\]@!$&'()*+,;=%]+/g, url => {
         let tail = '';
@@ -967,13 +1006,18 @@ const md = (() => {
           tail = url.slice(-1) + tail;
           url = url.slice(0, -1);
         }
-        return hold(link(url, escText(url))) + tail;
+        return hold(link(url, escText(url)), url) + tail;
+      })
+      .replace(/&(#\d{1,7}|#x[\da-f]{1,6}|amp|lt|gt|quot|apos|nbsp);/gi, (all, name) => {
+        const n = name[0] !== '#' ? -1 : name[1] === 'x' || name[1] === 'X' ? parseInt(name.slice(2), 16) : parseInt(name.slice(1), 10);
+        const ch = n < 0 ? ENTITIES[name.toLowerCase()] : n > 0 && n <= 0x10ffff && (n < 0xd800 || n > 0xdfff) ? String.fromCodePoint(n) : '';
+        return ch ? hold(escText(ch), ch) : all;
       });
     s = escText(s)
       .replace(/&lt;br\s*\/?&gt;/gi, '<br>')
       .replace(/&lt;(sup|sub|kbd|mark|ins|del|small|u|s|b|i|em|strong)&gt;([\s\S]*?)&lt;\/\1&gt;/gi, '<$1>$2</$1>');
     s = emphasis(s).replace(/\n/g, '<br>');
-    for (let n = 0; n < 8 && s.includes(''); n++) s = s.replace(/(\d+)/g, (_, k) => held[k] ?? '');
+    for (let n = 0; n < 8 && s.includes('\uE000'); n++) s = s.replace(/\uE000(\d+)\uE001/g, (_, k) => (held[k] ? held[k].html : ''));
     return s;
   }
 
@@ -1028,6 +1072,19 @@ function apiURL(p, kind) {
   return base + path + (query ? '?' + query : '');
 }
 
+// serve.mjs (or any server that does the same) adds this meta tag when it serves the page. It can then
+// relay API requests for providers that don't allow browser requests (CORS): same origin, no CORS check.
+const PROXY = (() => {
+  const meta = document.querySelector('meta[name="justchat-proxy"]');
+  return meta && meta.content ? new URL(meta.content, location.href).href : '';
+})();
+
+function viaProxy(p, url) {
+  if (!p.proxy) return url;
+  if (!PROXY) throw new Error(t('proxyMissing'));
+  return `${PROXY}?url=${encodeURIComponent(url)}`;
+}
+
 function apiHeaders(p, json) {
   const h = json ? { 'Content-Type': 'application/json' } : {};
   if (p.type === 'anthropic') {
@@ -1040,18 +1097,29 @@ function apiHeaders(p, json) {
   return Object.assign(h, parseObj(p.headers, t('extraHeaders')));
 }
 
-// Messages sent as context: non-empty, starting with a user turn, ending with a user turn.
+// Messages sent as context: non-empty, starting and ending with a user turn, roles alternating.
 function contextMessages(chat) {
-  let list = chat.messages.filter(m => m.content.trim() || (m.images && m.images.length));
+  let list = chat.messages.map(m => ({
+    role: m.role,
+    content: m.role === 'assistant' ? (splitThink(m.content) || m).content.trim() : m.content,
+    images: m.role === 'user' && m.images && m.images.length ? m.images : null,
+  })).filter(m => m.content.trim() || m.images);
   const limit = chat.options.context;
   if (limit > 0) list = list.slice(-limit);
   while (list.length && list[0].role !== 'user') list.shift();
   while (list.length && list[list.length - 1].role !== 'user') list.pop();
-  return list.map(m => ({
-    role: m.role,
-    content: m.role === 'assistant' ? (splitThink(m.content) || m).content : m.content,
-    images: m.role === 'user' && m.images && m.images.length ? m.images : null,
-  }));
+  // Merge same-role neighbours (e.g. two user turns around a failed reply); strict chat templates require alternation.
+  const merged = [];
+  for (const m of list) {
+    const prev = merged[merged.length - 1];
+    if (prev && prev.role === m.role) {
+      prev.content = [prev.content, m.content].filter(Boolean).join('\n\n');
+      if (m.images) prev.images = (prev.images || []).concat(m.images);
+    } else {
+      merged.push({ ...m });
+    }
+  }
+  return merged;
 }
 
 function buildRequest(p, model, o, history) {
@@ -1089,7 +1157,7 @@ function buildRequest(p, model, o, history) {
   if (o.topP != null) body.top_p = o.topP;
   body.stream = o.stream !== false;
   Object.assign(body, parseObj(p.body, t('extraBody')));
-  return { url, headers: apiHeaders(p, true), body };
+  return { url: viaProxy(p, url), headers: apiHeaders(p, true), body };
 }
 
 function anthropicImage(src) {
@@ -1124,7 +1192,9 @@ async function request(url, init) {
     return await fetch(url, init);
   } catch (e) {
     if (e.name === 'AbortError') throw e;
-    throw new Error(t('networkError', e.message || e));
+    let host = url;
+    try { host = new URL(url).host; } catch (err) { /* keep the raw URL */ }
+    throw new Error(t('networkError', host, e.message || e));
   }
 }
 
@@ -1221,7 +1291,7 @@ async function complete({ provider, model }, options, history, msg, onUpdate, si
 }
 
 async function fetchModels(p) {
-  const res = await request(apiURL(p, 'models'), { headers: apiHeaders(p, false) });
+  const res = await request(viaProxy(p, apiURL(p, 'models')), { headers: apiHeaders(p, false) });
   if (!res.ok) throw new Error(await httpError(res));
   const j = await res.json();
   const list = Array.isArray(j) ? j : j.data || j.models || [];
@@ -1321,7 +1391,7 @@ function renderChatList() {
     : state.chats;
   ui.list.innerHTML = chats.length ? chats.map(c =>
     `<div class="chat-item${c === state.current ? ' active' : ''}${state.running.has(c.id) ? ' running' : ''}" data-id="${esc(c.id)}">` +
-    `<span class="t">${esc(c.title || t('untitled'))}</span>` +
+    `<button class="t">${esc(c.title || t('untitled'))}</button>` +
     `<button class="icon-btn" data-act="rename" title="${esc(t('rename'))}" aria-label="${esc(t('rename'))}">${icon('edit')}</button>` +
     `<button class="icon-btn" data-act="delete" title="${esc(t('delete'))}" aria-label="${esc(t('delete'))}">${icon('trash')}</button></div>`
   ).join('') : `<div class="side-empty">${esc(t('noChats'))}</div>`;
@@ -1646,6 +1716,7 @@ function stopChat(chat) {
 
 function regenerate(chat, msg) {
   if (state.running.has(chat.id)) return;
+  if (!resolveModel(chat)) { toast(t('noModel')); return; } // check before removing anything
   const i = chat.messages.indexOf(msg);
   chat.messages.splice(msg.role === 'assistant' ? i : i + 1);
   generate(chat);
@@ -1725,7 +1796,7 @@ function openSettings() {
 function renderProviderList() {
   $('#provider-list').innerHTML = settings.providers.length ? settings.providers.map(p =>
     `<button class="prov" data-id="${esc(p.id)}"><div><div class="p-name">${esc(p.name || hostOf(p))}</div>` +
-    `<div class="p-sub">${esc(p.type === 'anthropic' ? 'Anthropic' : t('openaiCompatible'))} · ${esc(t(p.models.length === 1 ? 'oneModel' : 'modelCount', p.models.length))} · ${esc(hostOf(p))}</div></div>${icon('edit')}</button>`
+    `<div class="p-sub">${esc(p.type === 'anthropic' ? 'Anthropic' : t('openaiCompatible'))} · ${esc(t(p.models.length === 1 ? 'oneModel' : 'modelCount', p.models.length))} · ${esc(hostOf(p))}${p.proxy ? ' · ' + esc(t('viaProxy')) : ''}</div></div>${icon('edit')}</button>`
   ).join('') : `<p class="hint">${esc(t('noProviders'))}</p>`;
 }
 
@@ -1764,11 +1835,13 @@ $('#import-file').onchange = async e => {
     const chats = data && Array.isArray(data.chats) ? data.chats.filter(c => c && typeof c === 'object' && c.id) : [];
     if (!data || data.app !== 'JustChat' || (!data.settings && !chats.length)) throw new Error(t('badFile'));
     if (!confirm(t('importConfirm', chats.length))) return;
+    for (const run of state.running.values()) run.ctrl.abort(); // their chat objects are about to be replaced
+    state.chats = [];
     if (data.settings) await store.set('settings', normalizeSettings(data.settings));
     settings = normalizeSettings(data.settings || settings);
     for (const c of chats) await store.putChat(normalizeChat(c));
     await loadAll();
-    renderProviderList();
+    openSettings(); // refresh the provider list and the selects
     toast(t('imported'));
   } catch (err) {
     toast(t('importFailed', err.message || err), 5000);
@@ -1790,6 +1863,7 @@ $('#btn-clear').onclick = async () => {
 // ---------- Provider dialog ----------
 let editingProvider = null;
 let fetchedModels = [];
+let reopenSettings = false;
 const parseModels = text => [...new Set(text.split(/[\n,]+/).map(s => s.trim()).filter(Boolean))];
 
 function openProvider(p) {
@@ -1802,12 +1876,35 @@ function openProvider(p) {
   $('#pv-models').value = p ? p.models.join('\n') : '';
   $('#pv-headers').value = p ? p.headers : '';
   $('#pv-body').value = p ? p.body : '';
+  $('#pv-proxy').checked = !!(p && p.proxy);
+  $('#pv-proxy').disabled = !PROXY && !$('#pv-proxy').checked; // can still be unticked
+  $('#pv-proxy-hint').textContent = t(PROXY ? 'proxyHint' : 'proxyUnavailable');
   $('#pv-delete').hidden = !p;
   $('#pv-picker').hidden = true;
   $('#dlg-provider details.adv').open = !!(p && (p.headers || p.body));
   updateEndpointHint();
+  // Never stack two modal dialogs: hide Settings while editing and bring it back afterwards.
+  reopenSettings = ui.dlgSettings.open;
+  if (reopenSettings) ui.dlgSettings.close();
   ui.dlgProvider.showModal();
+  // Start in the first field (the dialog would otherwise focus the close button). Not on touch screens,
+  // where focusing would pop up the keyboard over the form.
+  if (!matchMedia('(pointer: coarse)').matches) $('#pv-name').focus();
 }
+
+function closeProvider() {
+  ui.dlgProvider.close();
+  if (reopenSettings) {
+    reopenSettings = false;
+    openSettings();
+  }
+}
+ui.dlgProvider.addEventListener('close', () => { // Esc, ×, Cancel or a backdrop click
+  if (reopenSettings) {
+    reopenSettings = false;
+    openSettings();
+  }
+});
 
 function readProviderForm() {
   return normalizeProvider({
@@ -1819,6 +1916,7 @@ function readProviderForm() {
     models: parseModels($('#pv-models').value),
     headers: $('#pv-headers').value.trim(),
     body: $('#pv-body').value.trim(),
+    proxy: $('#pv-proxy').checked,
   });
 }
 
@@ -1832,10 +1930,13 @@ function updateEndpointHint() {
   const p = { type: $('#pv-type').value, baseUrl: $('#pv-url').value.trim() };
   $('#pv-url').placeholder = DEFAULT_BASE[p.type];
   $('#pv-name').placeholder = hostOf(p);
-  $('#pv-endpoint').textContent = p.baseUrl && !/^https?:\/\//i.test(p.baseUrl) ? t('invalidUrl') : t('endpoint', apiURL(p, 'chat'));
+  $('#pv-endpoint').textContent = p.baseUrl && !/^https?:\/\//i.test(p.baseUrl)
+    ? t('invalidUrl')
+    : t('endpoint', apiURL(p, 'chat')) + ($('#pv-proxy').checked ? ' · ' + t('viaProxy') : '');
 }
 $('#pv-type').onchange = updateEndpointHint;
 $('#pv-url').oninput = updateEndpointHint;
+$('#pv-proxy').onchange = updateEndpointHint;
 
 function renderPicker() {
   const q = $('#pv-filter').value.trim().toLowerCase();
@@ -1893,7 +1994,7 @@ $('#pv-save').onclick = () => {
   }
   if (!resolveModel(state.current)) Object.assign(state.current.options, { providerId: d.providerId, model: d.model });
   saveSettings();
-  ui.dlgProvider.close();
+  closeProvider();
   renderProviderList();
   renderModelSelect();
   renderMessages();
@@ -1909,7 +2010,7 @@ $('#pv-delete').onclick = () => {
     settings.defaults.model = first ? first.models[0] || '' : '';
   }
   saveSettings();
-  ui.dlgProvider.close();
+  closeProvider();
   renderProviderList();
   renderModelSelect();
   renderMessages();
@@ -2015,6 +2116,7 @@ ui.msgs.addEventListener('click', async e => {
       const value = el.querySelector('textarea').value;
       if (act === 'edit-send') {
         if (busy || (!value.trim() && !(msg.images && msg.images.length))) return;
+        if (!resolveModel(chat)) { toast(t('noModel')); return; } // check before removing anything
         msg.content = value.trim();
         state.editing = null;
         chat.messages.splice(chat.messages.indexOf(msg) + 1);
@@ -2105,6 +2207,13 @@ mainEl.addEventListener('drop', e => {
   e.preventDefault();
   addImages([...e.dataTransfer.files].filter(f => f.type.startsWith('image/')));
 });
+// Elsewhere (sidebar, dialogs) a dropped file must not make the browser navigate away from the app.
+addEventListener('dragover', e => {
+  if (!hasFiles(e)) return;
+  e.preventDefault();
+  if (!mainEl.contains(e.target)) e.dataTransfer.dropEffect = 'none';
+});
+addEventListener('drop', e => { if (hasFiles(e)) e.preventDefault(); });
 
 // ---------- Startup ----------
 async function loadAll() {

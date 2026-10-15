@@ -1,30 +1,52 @@
+<div align="center">
+
+<img src="docs/icon.svg" width="72" height="72" alt="JustChat">
+
 # JustChat
 
-A minimal chat client for large language models, in a single HTML file.
+**A lightweight chat client for large language models, in a single HTML file.**
 
-No build step, no dependencies, no backend. Open `index.html` in a browser, add an API endpoint, and chat. Conversations and settings stay in that browser.
+Open it in a browser, add your API, and start chatting.<br>No build step, no dependencies, no sign-up. Your chats and keys stay on your device.
 
-[简体中文](README.zh-CN.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) ![Single HTML file](https://img.shields.io/badge/single%20file-HTML-orange.svg) ![Dependencies: none](https://img.shields.io/badge/dependencies-none-brightgreen.svg)
+
+**English** · [简体中文](README.zh-CN.md)
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/preview-dark.webp">
+  <img src="docs/preview-light.webp" alt="JustChat on a desktop and a phone">
+</picture>
+
+</div>
 
 ## Features
 
-- **Two API formats**: OpenAI-compatible Chat Completions (OpenAI, DeepSeek, OpenRouter, Ollama, vLLM, LM Studio, …) and the Anthropic Messages API (including Anthropic-compatible endpoints).
-- **Streaming** replies with a stop button.
-- **Reasoning display** for `reasoning_content` / `reasoning` fields, `<think>` tags, and Anthropic thinking blocks.
-- **Markdown**: tables, task lists, code blocks with syntax highlighting and copy buttons. Math is shown as TeX source.
-- **Image input** by picking, pasting, or dropping files (for vision models).
-- **Per-chat settings**: system prompt, temperature, top P, max tokens, context length, reasoning effort, streaming.
-- Edit, regenerate, copy, or delete messages. Rename, search, and delete chats.
-- Light and dark themes, English and Chinese UI, works on phones (Add to Home Screen).
-- Local storage only (IndexedDB), with JSON export and import.
+<table>
+  <tr>
+    <td width="50%" valign="top"><b>🔌 Bring your own models</b><br>Any OpenAI-compatible API (OpenAI, DeepSeek, OpenRouter, Ollama, vLLM, LM Studio, …) and the Anthropic API. Add as many providers as you like and switch models per chat.</td>
+    <td width="50%" valign="top"><b>💬 Made for conversation</b><br>Streaming replies, visible reasoning, Markdown with tables and highlighted code, image input, and editing or regenerating any message.</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top"><b>🎛️ Your settings, per chat</b><br>System prompt, temperature, top P, max tokens, context length, reasoning effort and streaming, for each chat or as defaults.</td>
+    <td width="50%" valign="top"><b>🔒 Private</b><br>Everything is stored in your browser. No analytics, no account, no third-party server. Back up with JSON export and import.</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top"><b>📱 Everywhere</b><br>Desktop and phone layouts, light and dark themes, English and Chinese, and Add to Home Screen.</td>
+    <td width="50%" valign="top"><b>🪶 Tiny</b><br>One HTML file of about 110 KB. Open it from disk or host it anywhere.</td>
+  </tr>
+</table>
 
-## Getting started
+## Quick start
 
-1. Get `index.html`. Either open it directly (`file://`) or put it on any static host (Nginx, GitHub Pages, object storage, …).
-2. Click **Add provider** and fill in the base URL, API key, and model IDs (or press **Fetch list** to load them from the server).
-3. Pick a model in the top bar and start typing.
+1. **Get the file.** Download [`index.html`](index.html) and open it in your browser, or put it on any static host such as GitHub Pages or Nginx.
+2. **Add a provider.** Click **Add provider**, enter the base URL and API key, then press **Fetch list** to load the models.
+3. **Start chatting.** Pick a model in the top bar and send a message.
 
-Every browser and device keeps its own chats and settings, so the same file can be opened from several devices without them interfering.
+> [!NOTE]
+> Each browser keeps its own chats and settings, so the same page can be used on several devices without them mixing. To back up or move them, use **Settings → Data → Export**.
+
+> [!TIP]
+> On a phone, use **Add to Home Screen** to open JustChat like an app.
 
 ### Base URLs
 
@@ -38,91 +60,84 @@ Every browser and device keeps its own chats and settings, so the same file can 
 | Ollama | OpenAI compatible | `http://localhost:11434/v1` |
 | vLLM, SGLang, llama.cpp, LM Studio | OpenAI compatible | `http://<host>:<port>/v1` |
 
-How the request URL is built (the provider dialog shows the result):
+JustChat adds the endpoint path for you (`/chat/completions`, or `/v1/messages` for Anthropic), and the provider dialog shows the final address. A full endpoint URL works too.
 
-- **OpenAI compatible**: `<base>/chat/completions`. If the base URL is only a host, `/v1` is added.
-- **Anthropic**: `<base>/v1/messages`. A base URL that already ends in `/v1` is used as is.
-- A full endpoint URL also works, and a query string such as `?api-version=…` is kept.
+## Relay server
 
-## Settings
+Some APIs accept requests from apps but not from web pages. For those, run the included relay. It serves JustChat and forwards its requests:
+
+```bash
+node serve.mjs
+```
+
+Open <http://localhost:8686>, edit the provider, and turn on **Send requests through this page's server**. The relay needs Node.js 20 or newer and has no dependencies. Replies are streamed and nothing is stored.
+
+| Option | Description |
+| --- | --- |
+| `--host <address>` | Address to listen on. Default `127.0.0.1` (this computer only). |
+| `--port <number>` | Port. Default `8686`. |
+| `--allow <url>` | API address the relay may forward to, such as `https://api.example.com`. Repeat for several. Required when `--host` is not this computer. |
+| `--cert <file>` `--key <file>` | Serve over HTTPS with these PEM files. |
+
+To use it from your other devices:
+
+```bash
+node serve.mjs --host 0.0.0.0 --allow https://api.example.com --cert fullchain.pem --key privkey.pem
+```
+
+> [!TIP]
+> Your API keys pass through the relay, so outside a trusted network serve it over HTTPS, either with `--cert`/`--key` or behind a reverse proxy that doesn't buffer responses. If the relay reports `ECONNRESET` for an API your browser can reach, run it with Node.js 24 or newer.
+
+## Configuration
 
 ### Chat settings
 
-Open them with the sliders icon in the top bar. They apply to the current chat; **Save as default** also uses them for new chats. The model picked in the top bar becomes the default for new chats too.
+Open them with the sliders icon in the top bar. Blank fields aren't sent, so the provider's own defaults apply. **Save as default** applies the settings to new chats as well, and the model you pick in the top bar becomes the default for new chats.
 
-Blank fields are not sent, so the provider's own default applies.
-
-| Setting | OpenAI compatible | Anthropic |
-| --- | --- | --- |
-| System prompt | first `system` message | `system` |
-| Temperature / Top P | `temperature` / `top_p` | `temperature` / `top_p` |
-| Max tokens | `max_tokens` (`max_completion_tokens` for api.openai.com) | `max_tokens`, 8192 when blank (the API requires it) |
-| Reasoning effort | `reasoning_effort` | `thinking: {"type": "adaptive", "display": "summarized"}` and `output_config.effort` |
-| Context messages | how many recent messages are sent; blank sends the whole chat | same |
-| Stream output | `stream` | `stream` |
-
-Some newer models reject sampling parameters such as `temperature`. Leave those fields blank for them. Earlier replies are sent back as plain text, without their reasoning.
+| Setting | What it does |
+| --- | --- |
+| System prompt | Instructions sent with every request in the chat. |
+| Temperature, Top P | Sampling parameters. Some newer models reject them; leave them blank for those. |
+| Max tokens | Longest reply allowed. Blank uses the provider's default; for Anthropic, which requires a value, it's 8192. |
+| Context messages | How many recent messages are sent with each request. Blank sends the whole chat. |
+| Reasoning effort | `reasoning_effort` for OpenAI-compatible APIs, adaptive thinking with an effort level for Anthropic. |
+| Stream output | Show the reply as it's generated. |
 
 ### Provider options
 
-Under **Advanced** in the provider dialog:
+Under **Advanced** in the provider dialog you can add extra headers and extra body parameters (JSON) that go with every request to that provider:
 
-- **Extra headers (JSON)** are added to every request, for example `{"api-key": "…"}` for gateways that don't use `Authorization: Bearer`.
-- **Extra body parameters (JSON)** are merged into every request body. Examples:
-  - `{"top_k": 20, "repetition_penalty": 1.05}` for self-hosted servers
-  - `{"chat_template_kwargs": {"enable_thinking": false}}` to turn off thinking on some vLLM/SGLang models
-  - `{"stream_options": {"include_usage": true}}` to get token counts from OpenAI-compatible streams
-  - `{"thinking": {"type": "enabled", "budget_tokens": 4096}}` for Anthropic-compatible servers that use thinking budgets
-
-## CORS and self-hosted APIs
-
-The browser talks to the API directly, so the API must allow cross-origin requests (CORS). If requests fail with a network error, check:
-
-- **CORS headers.** For Ollama, set `OLLAMA_ORIGINS="*"`. For a server behind Nginx, something like:
-
-  ```nginx
-  location / {
-      if ($request_method = OPTIONS) {
-          add_header Access-Control-Allow-Origin "*" always;
-          add_header Access-Control-Allow-Methods "GET, POST, OPTIONS" always;
-          add_header Access-Control-Allow-Headers $http_access_control_request_headers always;
-          add_header Access-Control-Max-Age 86400 always;
-          return 204;
-      }
-      proxy_hide_header Access-Control-Allow-Origin;   # avoid duplicates if the upstream sets it
-      add_header Access-Control-Allow-Origin "*" always;
-
-      proxy_pass http://127.0.0.1:8000;
-      proxy_http_version 1.1;
-      proxy_buffering off;        # pass streamed tokens through right away
-      proxy_read_timeout 600s;    # allow long generations
-  }
-  ```
-
-  CORS is not access control: the API key is what protects the endpoint. A page opened from `file://` sends `Origin: null`.
-- **Mixed content.** A page served over HTTPS cannot call an `http://` API. Serve both over HTTPS, or open the file locally.
-
-## Data and privacy
-
-- Chats and settings, including API keys, are stored in the browser's IndexedDB for the page's origin. Other pages on the same origin could read them, so host JustChat on its own domain or subdomain.
-- The app makes no requests except to the APIs you configure. Images in model replies (Markdown `![]()`) are loaded from their URLs.
-- **Export** writes everything to a JSON file (API keys included). **Import** replaces settings and merges chats.
-- Browsers may clear site data for sites that haven't been used for a while, Safari in particular. Export from time to time; on iOS, adding the page to the Home Screen also helps.
-
-## Keyboard
-
-| Key | Action |
+| Example | Use |
 | --- | --- |
-| Enter | Send (Shift+Enter for a new line). On touch screens Enter adds a new line. |
-| Ctrl/⌘ + Enter | Send. Can be made the only send key in Settings. |
-| Esc | Stop generating |
-| Ctrl/⌘ + Enter, Esc | Save or cancel while editing a message |
+| `{"top_k": 20, "repetition_penalty": 1.05}` | Extra sampling options of self-hosted servers |
+| `{"chat_template_kwargs": {"enable_thinking": false}}` | Turn off thinking on some vLLM and SGLang models |
+| `{"stream_options": {"include_usage": true}}` | Show token counts with OpenAI-compatible streaming |
+| `{"thinking": {"type": "enabled", "budget_tokens": 4096}}` | Thinking budget for Anthropic-compatible servers |
+| `{"api-key": "…"}` (headers) | Gateways that don't use `Authorization: Bearer` |
+
+## Keyboard shortcuts
+
+| Keys | Action |
+| --- | --- |
+| <kbd>Enter</kbd> | Send (a new line on touch screens) |
+| <kbd>Shift</kbd> + <kbd>Enter</kbd> | New line |
+| <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> | Send. Can be made the only send key in Settings. |
+| <kbd>Esc</kbd> | Stop generating |
+
+While editing a message, <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> saves and <kbd>Esc</kbd> cancels.
+
+## Privacy
+
+- Chats and settings, API keys included, are stored only in your browser (IndexedDB). Host JustChat on its own domain or subdomain, because other pages on the same origin could read them.
+- JustChat only talks to the APIs you add, or to your relay. Images in model replies are loaded from their URLs.
+- Exports contain everything, API keys included.
+- Browsers may clear data of sites you haven't used for a while, Safari especially. Export now and then; on iOS, adding the page to the Home Screen helps.
 
 ## Development
 
-Everything lives in `index.html`: the styles, the markup, and one script split into sections (utilities, i18n, storage, Markdown, API, UI). There is nothing to build or install. Edit the file and reload.
+Everything lives in `index.html`: the styles, the markup and one script organized in sections (utilities, i18n, storage, Markdown, API, UI). There is nothing to install or build. Edit the file and reload. `serve.mjs` is only needed for the relay.
 
-To add a UI language, add an entry to the `I18N` object and an option to the Language select.
+To add a UI language, add an entry to the `I18N` object and an option to the language select.
 
 ## License
 

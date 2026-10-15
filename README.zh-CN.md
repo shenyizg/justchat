@@ -1,30 +1,52 @@
+<div align="center">
+
+<img src="docs/icon.svg" width="72" height="72" alt="JustChat">
+
 # JustChat
 
-一个极简的大模型聊天客户端，只有一个 HTML 文件。
+**一个轻量的大模型聊天客户端，只有一个 HTML 文件。**
 
-无需构建、没有依赖、不需要后端。用浏览器打开 `index.html`，添加 API 地址，就可以开始对话。对话记录和设置只保存在当前浏览器里。
+用浏览器打开，填上你的 API，就能开始对话。<br>无需构建、没有依赖、不用注册。对话记录和 API Key 只留在你自己的设备上。
 
-[English](README.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) ![Single HTML file](https://img.shields.io/badge/single%20file-HTML-orange.svg) ![Dependencies: none](https://img.shields.io/badge/dependencies-none-brightgreen.svg)
 
-## 功能
+[English](README.md) · **简体中文**
 
-- **两种 API 格式**：OpenAI 兼容的 Chat Completions（OpenAI、DeepSeek、OpenRouter、Ollama、vLLM、LM Studio 等）和 Anthropic Messages API（包括 Anthropic 兼容接口）。
-- **流式输出**，可随时停止。
-- **显示推理过程**：支持 `reasoning_content` / `reasoning` 字段、`<think>` 标签以及 Anthropic 的 thinking 块。
-- **Markdown 渲染**：表格、任务列表、带语法高亮和复制按钮的代码块。数学公式以 TeX 源码显示。
-- **图片输入**：可选择、粘贴或拖入图片（用于视觉模型）。
-- **每个对话独立设置**：系统提示词、温度、Top P、最大输出 Token、上下文消息数、推理强度、流式输出。
-- 消息可编辑、重新生成、复制、删除；对话可重命名、搜索、删除。
-- 浅色 / 深色主题，中英文界面，适配手机（可添加到主屏幕）。
-- 数据只存在本地（IndexedDB），支持 JSON 导出和导入。
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/preview-dark-zh.webp">
+  <img src="docs/preview-light-zh.webp" alt="JustChat 的电脑端与手机端界面">
+</picture>
 
-## 开始使用
+</div>
 
-1. 获取 `index.html`。可以直接打开（`file://`），也可以放到任意静态托管上（Nginx、GitHub Pages、对象存储等）。
-2. 点击 **添加服务商**，填写 Base URL、API Key 和模型 ID（或点 **获取列表** 从服务器拉取）。
-3. 在顶栏选择模型，开始输入。
+## 功能特性
 
-每个浏览器、每台设备各自保存自己的对话和设置，多台设备访问同一个文件也互不干扰。
+<table>
+  <tr>
+    <td width="50%" valign="top"><b>🔌 接入你自己的模型</b><br>支持所有 OpenAI 兼容 API（OpenAI、DeepSeek、OpenRouter、Ollama、vLLM、LM Studio 等）和 Anthropic API。可以添加任意多个服务商，每个对话单独选择模型。</td>
+    <td width="50%" valign="top"><b>💬 专注对话</b><br>流式输出、显示推理过程、支持表格和代码高亮的 Markdown、图片输入，任意消息都能编辑或重新生成。</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top"><b>🎛️ 每个对话单独设置</b><br>系统提示词、温度、Top P、最大输出 Token、上下文消息数、推理强度、流式输出，可以按对话设置，也可以设为默认。</td>
+    <td width="50%" valign="top"><b>🔒 保护隐私</b><br>所有数据都保存在你的浏览器里。没有统计、不用账号、不经过第三方服务器。支持 JSON 导出和导入备份。</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top"><b>📱 随处可用</b><br>适配电脑和手机，浅色 / 深色主题，中英文界面，可以添加到手机主屏幕。</td>
+    <td width="50%" valign="top"><b>🪶 小巧</b><br>只有一个约 110 KB 的 HTML 文件。可以直接打开本地文件，也可以放到任何地方托管。</td>
+  </tr>
+</table>
+
+## 快速开始
+
+1. **获取文件。** 下载 [`index.html`](index.html) 用浏览器打开，或者放到任意静态托管上，比如 GitHub Pages、Nginx。
+2. **添加服务商。** 点击 **添加服务商**，填写 Base URL 和 API Key，再点 **获取列表** 拉取模型。
+3. **开始对话。** 在顶栏选择模型，发送消息即可。
+
+> [!NOTE]
+> 每个浏览器各自保存自己的对话和设置，多台设备访问同一个页面也互不干扰。需要备份或迁移时，使用 **设置 → 数据 → 导出**。
+
+> [!TIP]
+> 在手机上可以 **添加到主屏幕**，像 App 一样打开 JustChat。
 
 ### Base URL 示例
 
@@ -38,89 +60,82 @@
 | Ollama | OpenAI 兼容 | `http://localhost:11434/v1` |
 | vLLM、SGLang、llama.cpp、LM Studio | OpenAI 兼容 | `http://<主机>:<端口>/v1` |
 
-请求地址的拼接规则（服务商对话框里会显示最终地址）：
+JustChat 会自动补上接口路径（`/chat/completions`，Anthropic 格式为 `/v1/messages`），服务商对话框里会显示最终的请求地址。直接填写完整的接口地址也可以。
 
-- **OpenAI 兼容**：`<base>/chat/completions`。如果 Base URL 只有主机部分，会自动补上 `/v1`。
-- **Anthropic**：`<base>/v1/messages`。Base URL 已经以 `/v1` 结尾时直接使用。
-- 也可以直接填写完整的接口地址；`?api-version=…` 这类查询参数会被保留。
+## 转发服务
 
-## 设置说明
+有些 API 只接受 App 的请求，不接受网页直接请求。遇到这种情况，可以运行仓库里自带的转发服务，它负责提供 JustChat 页面并转发请求：
+
+```bash
+node serve.mjs
+```
+
+打开 <http://localhost:8686>，编辑对应的服务商，开启 **通过本页面的服务器转发请求** 即可。需要 Node.js 20 或更高版本，没有任何依赖。回复会流式返回，不保存任何内容。
+
+| 参数 | 说明 |
+| --- | --- |
+| `--host <地址>` | 监听地址，默认 `127.0.0.1`（仅本机可访问）。 |
+| `--port <端口>` | 端口，默认 `8686`。 |
+| `--allow <地址>` | 允许转发到的 API 地址，例如 `https://api.example.com`，可以写多个。`--host` 不是本机时必填。 |
+| `--cert <文件>` `--key <文件>` | 使用这两个 PEM 文件提供 HTTPS 访问。 |
+
+让其他设备也能使用：
+
+```bash
+node serve.mjs --host 0.0.0.0 --allow https://api.example.com --cert fullchain.pem --key privkey.pem
+```
+
+> [!TIP]
+> API Key 会经过转发服务，所以在可信网络以外请务必使用 HTTPS：可以用 `--cert`/`--key`，也可以放在不缓冲响应的反向代理后面。如果转发服务连接某个 API 时报 `ECONNRESET`，而浏览器能正常访问它，请改用 Node.js 24 或更高版本运行。
+
+## 配置说明
 
 ### 对话设置
 
-点击顶栏的滑块图标打开，作用于当前对话；点 **设为默认** 会同时用于之后的新对话。在顶栏选择的模型也会成为新对话的默认模型。
+点击顶栏的滑块图标打开。留空的字段不会发送，即使用服务商自己的默认值。**设为默认** 会让之后的新对话也使用这些设置；在顶栏选择的模型也会成为新对话的默认模型。
 
-留空的字段不会发送，即使用服务商自己的默认值。
-
-| 设置 | OpenAI 兼容 | Anthropic |
-| --- | --- | --- |
-| 系统提示词 | 第一条 `system` 消息 | `system` |
-| 温度 / Top P | `temperature` / `top_p` | `temperature` / `top_p` |
-| 最大输出 Token | `max_tokens`（api.openai.com 使用 `max_completion_tokens`） | `max_tokens`，留空时为 8192（该 API 要求必填） |
-| 推理强度 | `reasoning_effort` | `thinking: {"type": "adaptive", "display": "summarized"}` 加 `output_config.effort` |
-| 上下文消息数 | 每次请求附带的最近消息条数；留空则发送整个对话 | 同左 |
-| 流式输出 | `stream` | `stream` |
-
-部分较新的模型不接受 `temperature` 等采样参数，使用这些模型时请保持留空。之前的回复会以纯文本发回，不包含推理过程。
+| 设置 | 作用 |
+| --- | --- |
+| 系统提示词 | 这个对话中每次请求都会附带的指令。 |
+| 温度、Top P | 采样参数。部分较新的模型不接受这些参数，使用时请留空。 |
+| 最大输出 Token | 回复的最大长度。留空则使用服务商的默认值；Anthropic 格式要求必须填写，留空时为 8192。 |
+| 上下文消息数 | 每次请求附带的最近消息条数。留空则发送整个对话。 |
+| 推理强度 | OpenAI 兼容 API 使用 `reasoning_effort`，Anthropic 使用带强度等级的自适应思考。 |
+| 流式输出 | 边生成边显示回复。 |
 
 ### 服务商高级选项
 
-在服务商对话框的 **高级** 中：
+在服务商对话框的 **高级** 中，可以填写额外的请求头和请求参数（JSON），它们会随每个请求一起发往该服务商：
 
-- **额外请求头（JSON）**：添加到每个请求中，例如对不使用 `Authorization: Bearer` 的网关填写 `{"api-key": "…"}`。
-- **额外请求参数（JSON）**：合并到每个请求体中。例如：
-  - `{"top_k": 20, "repetition_penalty": 1.05}`：自部署服务的采样参数
-  - `{"chat_template_kwargs": {"enable_thinking": false}}`：在部分 vLLM / SGLang 模型上关闭思考
-  - `{"stream_options": {"include_usage": true}}`：让 OpenAI 兼容的流式接口返回 Token 用量
-  - `{"thinking": {"type": "enabled", "budget_tokens": 4096}}`：用于使用思考预算的 Anthropic 兼容服务
-
-## 跨域（CORS）与自部署接口
-
-浏览器会直接请求 API，因此 API 必须允许跨域请求（CORS）。如果请求报网络错误，请检查：
-
-- **CORS 响应头。** Ollama 可设置 `OLLAMA_ORIGINS="*"`。通过 Nginx 反向代理的服务可参考：
-
-  ```nginx
-  location / {
-      if ($request_method = OPTIONS) {
-          add_header Access-Control-Allow-Origin "*" always;
-          add_header Access-Control-Allow-Methods "GET, POST, OPTIONS" always;
-          add_header Access-Control-Allow-Headers $http_access_control_request_headers always;
-          add_header Access-Control-Max-Age 86400 always;
-          return 204;
-      }
-      proxy_hide_header Access-Control-Allow-Origin;   # 上游已设置时避免重复
-      add_header Access-Control-Allow-Origin "*" always;
-
-      proxy_pass http://127.0.0.1:8000;
-      proxy_http_version 1.1;
-      proxy_buffering off;        # 流式输出的内容立即转发
-      proxy_read_timeout 600s;    # 允许较长的生成时间
-  }
-  ```
-
-  CORS 并不是访问控制，真正保护接口的是 API Key。从 `file://` 打开的页面发出的请求头是 `Origin: null`。
-- **混合内容。** 通过 HTTPS 打开的页面无法请求 `http://` 接口。请让两者都使用 HTTPS，或直接打开本地文件。
-
-## 数据与隐私
-
-- 对话和设置（包括 API Key）保存在浏览器的 IndexedDB 中，按页面来源（origin）隔离。同一来源下的其他页面也能读取这些数据，所以建议把 JustChat 放在单独的域名或子域名下。
-- 除了你配置的 API，应用不会发出任何请求。模型回复中的图片（Markdown `![]()`）会从对应地址加载。
-- **导出** 会把全部数据写入一个 JSON 文件（包含 API Key）。**导入** 会替换设置并合并对话。
-- 浏览器可能会清除长时间未访问网站的数据，Safari 尤其如此。建议定期导出备份；在 iOS 上添加到主屏幕也有帮助。
+| 示例 | 用途 |
+| --- | --- |
+| `{"top_k": 20, "repetition_penalty": 1.05}` | 自部署服务支持的其他采样参数 |
+| `{"chat_template_kwargs": {"enable_thinking": false}}` | 在部分 vLLM、SGLang 模型上关闭思考 |
+| `{"stream_options": {"include_usage": true}}` | 让 OpenAI 兼容的流式输出返回 Token 用量 |
+| `{"thinking": {"type": "enabled", "budget_tokens": 4096}}` | 为 Anthropic 兼容服务设置思考预算 |
+| `{"api-key": "…"}`（请求头） | 不使用 `Authorization: Bearer` 的网关 |
 
 ## 快捷键
 
 | 按键 | 作用 |
 | --- | --- |
-| Enter | 发送（Shift+Enter 换行）。触屏设备上 Enter 为换行。 |
-| Ctrl/⌘ + Enter | 发送。可在设置中改为仅用此组合键发送。 |
-| Esc | 停止生成 |
-| Ctrl/⌘ + Enter、Esc | 编辑消息时保存或取消 |
+| <kbd>Enter</kbd> | 发送（触屏设备上为换行） |
+| <kbd>Shift</kbd> + <kbd>Enter</kbd> | 换行 |
+| <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> | 发送。可以在设置中改为只用这个组合键发送。 |
+| <kbd>Esc</kbd> | 停止生成 |
+
+编辑消息时，<kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> 保存，<kbd>Esc</kbd> 取消。
+
+## 隐私
+
+- 对话和设置（包括 API Key）只保存在你的浏览器里（IndexedDB）。同一来源下的其他网页也能读到这些数据，所以建议把 JustChat 放在单独的域名或子域名下。
+- JustChat 只会访问你添加的 API，或者你自己的转发服务。模型回复中的图片会从对应地址加载。
+- 导出的文件包含全部数据，也包括 API Key。
+- 浏览器可能会清除长时间未访问网站的数据，Safari 尤其如此。建议定期导出备份；在 iOS 上添加到主屏幕也有帮助。
 
 ## 开发
 
-所有内容都在 `index.html` 里：样式、页面结构，以及按模块划分的一段脚本（工具函数、多语言、存储、Markdown、API、界面）。无需安装或构建，修改后刷新即可。
+所有内容都在 `index.html` 里：样式、页面结构，以及按模块划分的一段脚本（工具函数、多语言、存储、Markdown、API、界面）。无需安装或构建，修改后刷新即可。`serve.mjs` 只在需要转发时使用。
 
 如需添加界面语言，在 `I18N` 对象中加一项，并在语言下拉框中加一个选项。
 
