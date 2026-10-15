@@ -56,37 +56,10 @@
 | Anthropic | Anthropic | `https://api.anthropic.com` |
 | DeepSeek | OpenAI 兼容 | `https://api.deepseek.com` |
 | OpenRouter | OpenAI 兼容 | `https://openrouter.ai/api/v1` |
-| Google Gemini | OpenAI 兼容 | `https://generativelanguage.googleapis.com/v1beta/openai` |
 | Ollama | OpenAI 兼容 | `http://localhost:11434/v1` |
 | vLLM、SGLang、llama.cpp、LM Studio | OpenAI 兼容 | `http://<主机>:<端口>/v1` |
 
 JustChat 会自动补上接口路径（`/chat/completions`，Anthropic 格式为 `/v1/messages`），服务商对话框里会显示最终的请求地址。直接填写完整的接口地址也可以。
-
-## 转发服务
-
-有些 API 只接受 App 的请求，不接受网页直接请求。遇到这种情况，可以运行仓库里自带的转发服务，它负责提供 JustChat 页面并转发请求：
-
-```bash
-node serve.mjs
-```
-
-打开 <http://localhost:8686>，编辑对应的服务商，开启 **通过本页面的服务器转发请求** 即可。需要 Node.js 20 或更高版本，没有任何依赖。回复会流式返回，不保存任何内容。
-
-| 参数 | 说明 |
-| --- | --- |
-| `--host <地址>` | 监听地址，默认 `127.0.0.1`（仅本机可访问）。 |
-| `--port <端口>` | 端口，默认 `8686`。 |
-| `--allow <地址>` | 允许转发到的 API 地址，例如 `https://api.example.com`，可以写多个。`--host` 不是本机时必填。 |
-| `--cert <文件>` `--key <文件>` | 使用这两个 PEM 文件提供 HTTPS 访问。 |
-
-让其他设备也能使用：
-
-```bash
-node serve.mjs --host 0.0.0.0 --allow https://api.example.com --cert fullchain.pem --key privkey.pem
-```
-
-> [!TIP]
-> API Key 会经过转发服务，所以在可信网络以外请务必使用 HTTPS：可以用 `--cert`/`--key`，也可以放在不缓冲响应的反向代理后面。如果转发服务连接某个 API 时报 `ECONNRESET`，而浏览器能正常访问它，请改用 Node.js 24 或更高版本运行。
 
 ## 配置说明
 
@@ -129,13 +102,13 @@ node serve.mjs --host 0.0.0.0 --allow https://api.example.com --cert fullchain.p
 ## 隐私
 
 - 对话和设置（包括 API Key）只保存在你的浏览器里（IndexedDB）。同一来源下的其他网页也能读到这些数据，所以建议把 JustChat 放在单独的域名或子域名下。
-- JustChat 只会访问你添加的 API，或者你自己的转发服务。模型回复中的图片会从对应地址加载。
+- JustChat 只会访问你添加的 API。模型回复中的图片会从对应地址加载。
 - 导出的文件包含全部数据，也包括 API Key。
 - 浏览器可能会清除长时间未访问网站的数据，Safari 尤其如此。建议定期导出备份；在 iOS 上添加到主屏幕也有帮助。
 
 ## 开发
 
-所有内容都在 `index.html` 里：样式、页面结构，以及按模块划分的一段脚本（工具函数、多语言、存储、Markdown、API、界面）。无需安装或构建，修改后刷新即可。`serve.mjs` 只在需要转发时使用。
+所有内容都在 `index.html` 里：样式、页面结构，以及按模块划分的一段脚本（工具函数、多语言、存储、Markdown、API、界面）。无需安装或构建，修改后刷新即可。
 
 如需添加界面语言，在 `I18N` 对象中加一项，并在语言下拉框中加一个选项。
 

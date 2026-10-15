@@ -56,37 +56,10 @@ Open it in a browser, add your API, and start chatting.<br>No build step, no dep
 | Anthropic | Anthropic | `https://api.anthropic.com` |
 | DeepSeek | OpenAI compatible | `https://api.deepseek.com` |
 | OpenRouter | OpenAI compatible | `https://openrouter.ai/api/v1` |
-| Google Gemini | OpenAI compatible | `https://generativelanguage.googleapis.com/v1beta/openai` |
 | Ollama | OpenAI compatible | `http://localhost:11434/v1` |
 | vLLM, SGLang, llama.cpp, LM Studio | OpenAI compatible | `http://<host>:<port>/v1` |
 
 JustChat adds the endpoint path for you (`/chat/completions`, or `/v1/messages` for Anthropic), and the provider dialog shows the final address. A full endpoint URL works too.
-
-## Relay server
-
-Some APIs accept requests from apps but not from web pages. For those, run the included relay. It serves JustChat and forwards its requests:
-
-```bash
-node serve.mjs
-```
-
-Open <http://localhost:8686>, edit the provider, and turn on **Send requests through this page's server**. The relay needs Node.js 20 or newer and has no dependencies. Replies are streamed and nothing is stored.
-
-| Option | Description |
-| --- | --- |
-| `--host <address>` | Address to listen on. Default `127.0.0.1` (this computer only). |
-| `--port <number>` | Port. Default `8686`. |
-| `--allow <url>` | API address the relay may forward to, such as `https://api.example.com`. Repeat for several. Required when `--host` is not this computer. |
-| `--cert <file>` `--key <file>` | Serve over HTTPS with these PEM files. |
-
-To use it from your other devices:
-
-```bash
-node serve.mjs --host 0.0.0.0 --allow https://api.example.com --cert fullchain.pem --key privkey.pem
-```
-
-> [!TIP]
-> Your API keys pass through the relay, so outside a trusted network serve it over HTTPS, either with `--cert`/`--key` or behind a reverse proxy that doesn't buffer responses. If the relay reports `ECONNRESET` for an API your browser can reach, run it with Node.js 24 or newer.
 
 ## Configuration
 
@@ -129,13 +102,13 @@ While editing a message, <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> sav
 ## Privacy
 
 - Chats and settings, API keys included, are stored only in your browser (IndexedDB). Host JustChat on its own domain or subdomain, because other pages on the same origin could read them.
-- JustChat only talks to the APIs you add, or to your relay. Images in model replies are loaded from their URLs.
+- JustChat only talks to the APIs you add. Images in model replies are loaded from their URLs.
 - Exports contain everything, API keys included.
 - Browsers may clear data of sites you haven't used for a while, Safari especially. Export now and then; on iOS, adding the page to the Home Screen helps.
 
 ## Development
 
-Everything lives in `index.html`: the styles, the markup and one script organized in sections (utilities, i18n, storage, Markdown, API, UI). There is nothing to install or build. Edit the file and reload. `serve.mjs` is only needed for the relay.
+Everything lives in `index.html`: the styles, the markup and one script organized in sections (utilities, i18n, storage, Markdown, API, UI). There is nothing to install or build. Edit the file and reload.
 
 To add a UI language, add an entry to the `I18N` object and an option to the language select.
 

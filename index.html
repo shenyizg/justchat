@@ -190,9 +190,7 @@ dialog::backdrop { background: rgba(0,0,0,.4); }
 .field textarea { resize: vertical; line-height: 1.5; }
 .field .mono, .mono { font-family: var(--mono); font-size: 13px; }
 .secret:not(:focus) { -webkit-text-security: disc; }
-.field.check { flex-direction: row; align-items: center; gap: 8px; margin: 0; color: var(--fg); }
-.grid2 .field.check { margin: 26px 0 14px; }
-.field.check input:disabled + span { color: var(--fg-3); }
+.field.check { flex-direction: row; align-items: center; gap: 8px; margin-top: 26px; color: var(--fg); }
 .field.check input { width: 16px; height: 16px; margin: 0; }
 .field-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
@@ -364,10 +362,6 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
     <label class="field"><span data-i18n="apiFormat"></span>
       <select id="pv-type"><option value="openai" data-i18n="openaiCompatible"></option><option value="anthropic">Anthropic</option></select></label>
     <label class="field"><span data-i18n="baseUrl"></span><input id="pv-url" type="url" inputmode="url" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><small class="hint" id="pv-endpoint"></small></label>
-    <div class="field">
-      <label class="field check"><input id="pv-proxy" type="checkbox"><span data-i18n="useProxy"></span></label>
-      <small class="hint" id="pv-proxy-hint"></small>
-    </div>
     <!-- Not type="password": password managers would treat this form as a login and interfere with it. -->
     <label class="field"><span data-i18n="apiKey"></span><input id="pv-key" class="secret" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"></label>
     <div class="field">
@@ -491,14 +485,9 @@ const I18N = {
     noModel: 'Select a model first',
     truncated: 'Output stopped: the max tokens limit was reached.', refused: 'The model declined to respond.',
     filtered: 'Output stopped by a content filter.', stopped: 'Stopped.',
-    networkError: 'Could not reach {0} ({1}). Check the base URL. If this API doesn\'t accept requests from web pages, open JustChat through serve.mjs and turn on "Send requests through this page\'s server" for this provider.',
+    networkError: 'Could not reach {0} ({1}). Check the base URL and your network connection.',
     usage: '{0} in · {1} out', storageError: 'Could not save: {0}', storageMissing: 'Browser storage is unavailable. Nothing will be saved.',
     imageError: 'Could not read the image', version: 'JustChat {0} · Data stays in this browser',
-    useProxy: 'Send requests through this page\'s server',
-    proxyHint: 'For APIs that don\'t accept requests from browsers (CORS). Available because this page was opened through serve.mjs.',
-    proxyUnavailable: 'For APIs that don\'t accept requests from browsers (CORS). Open JustChat through serve.mjs to use it (see the README).',
-    proxyMissing: 'This provider is set to go through serve.mjs, but this page wasn\'t opened through serve.mjs. Open it through serve.mjs, or untick the option in the provider settings.',
-    viaProxy: 'relayed by serve.mjs',
   },
   zh: {
     newChat: '新对话', search: '搜索', settings: '设置', toggleSidebar: '切换侧边栏', model: '模型',
@@ -533,14 +522,9 @@ const I18N = {
     noModel: '请先选择模型',
     truncated: '输出已停止：达到最大 Token 数限制。', refused: '模型拒绝了此请求。',
     filtered: '输出被内容过滤器中止。', stopped: '已停止。',
-    networkError: '无法连接 {0}（{1}）。请检查 Base URL。如果这个 API 不接受网页直接请求，请通过 serve.mjs 打开 JustChat，并为该服务商开启「通过本页面的服务器转发请求」。',
+    networkError: '无法连接 {0}（{1}）。请检查 Base URL 和网络连接。',
     usage: '输入 {0} · 输出 {1}', storageError: '保存失败：{0}', storageMissing: '浏览器存储不可用，数据将不会被保存。',
     imageError: '无法读取图片', version: 'JustChat {0} · 数据仅保存在本浏览器',
-    useProxy: '通过本页面的服务器转发请求',
-    proxyHint: '用于不接受浏览器直接请求（CORS）的 API。当前页面是通过 serve.mjs 打开的，可以使用。',
-    proxyUnavailable: '用于不接受浏览器直接请求（CORS）的 API。需要通过 serve.mjs 打开 JustChat 才能使用（见 README）。',
-    proxyMissing: '该服务商设置为经 serve.mjs 转发，但当前页面不是通过 serve.mjs 打开的。请通过 serve.mjs 打开，或在服务商设置中取消该选项。',
-    viaProxy: '经 serve.mjs 转发',
   },
 };
 let L = I18N.en;
@@ -666,7 +650,6 @@ function normalizeProvider(p) {
     models: Array.isArray(p.models) ? [...new Set(p.models.map(String).filter(Boolean))] : [],
     headers: String(p.headers || ''),
     body: String(p.body || ''),
-    proxy: !!p.proxy,
   };
 }
 
@@ -1072,19 +1055,6 @@ function apiURL(p, kind) {
   return base + path + (query ? '?' + query : '');
 }
 
-// serve.mjs (or any server that does the same) adds this meta tag when it serves the page. It can then
-// relay API requests for providers that don't allow browser requests (CORS): same origin, no CORS check.
-const PROXY = (() => {
-  const meta = document.querySelector('meta[name="justchat-proxy"]');
-  return meta && meta.content ? new URL(meta.content, location.href).href : '';
-})();
-
-function viaProxy(p, url) {
-  if (!p.proxy) return url;
-  if (!PROXY) throw new Error(t('proxyMissing'));
-  return `${PROXY}?url=${encodeURIComponent(url)}`;
-}
-
 function apiHeaders(p, json) {
   const h = json ? { 'Content-Type': 'application/json' } : {};
   if (p.type === 'anthropic') {
@@ -1157,7 +1127,7 @@ function buildRequest(p, model, o, history) {
   if (o.topP != null) body.top_p = o.topP;
   body.stream = o.stream !== false;
   Object.assign(body, parseObj(p.body, t('extraBody')));
-  return { url: viaProxy(p, url), headers: apiHeaders(p, true), body };
+  return { url, headers: apiHeaders(p, true), body };
 }
 
 function anthropicImage(src) {
@@ -1291,7 +1261,7 @@ async function complete({ provider, model }, options, history, msg, onUpdate, si
 }
 
 async function fetchModels(p) {
-  const res = await request(viaProxy(p, apiURL(p, 'models')), { headers: apiHeaders(p, false) });
+  const res = await request(apiURL(p, 'models'), { headers: apiHeaders(p, false) });
   if (!res.ok) throw new Error(await httpError(res));
   const j = await res.json();
   const list = Array.isArray(j) ? j : j.data || j.models || [];
@@ -1796,7 +1766,7 @@ function openSettings() {
 function renderProviderList() {
   $('#provider-list').innerHTML = settings.providers.length ? settings.providers.map(p =>
     `<button class="prov" data-id="${esc(p.id)}"><div><div class="p-name">${esc(p.name || hostOf(p))}</div>` +
-    `<div class="p-sub">${esc(p.type === 'anthropic' ? 'Anthropic' : t('openaiCompatible'))} · ${esc(t(p.models.length === 1 ? 'oneModel' : 'modelCount', p.models.length))} · ${esc(hostOf(p))}${p.proxy ? ' · ' + esc(t('viaProxy')) : ''}</div></div>${icon('edit')}</button>`
+    `<div class="p-sub">${esc(p.type === 'anthropic' ? 'Anthropic' : t('openaiCompatible'))} · ${esc(t(p.models.length === 1 ? 'oneModel' : 'modelCount', p.models.length))} · ${esc(hostOf(p))}</div></div>${icon('edit')}</button>`
   ).join('') : `<p class="hint">${esc(t('noProviders'))}</p>`;
 }
 
@@ -1876,9 +1846,6 @@ function openProvider(p) {
   $('#pv-models').value = p ? p.models.join('\n') : '';
   $('#pv-headers').value = p ? p.headers : '';
   $('#pv-body').value = p ? p.body : '';
-  $('#pv-proxy').checked = !!(p && p.proxy);
-  $('#pv-proxy').disabled = !PROXY && !$('#pv-proxy').checked; // can still be unticked
-  $('#pv-proxy-hint').textContent = t(PROXY ? 'proxyHint' : 'proxyUnavailable');
   $('#pv-delete').hidden = !p;
   $('#pv-picker').hidden = true;
   $('#dlg-provider details.adv').open = !!(p && (p.headers || p.body));
@@ -1916,7 +1883,6 @@ function readProviderForm() {
     models: parseModels($('#pv-models').value),
     headers: $('#pv-headers').value.trim(),
     body: $('#pv-body').value.trim(),
-    proxy: $('#pv-proxy').checked,
   });
 }
 
@@ -1930,13 +1896,10 @@ function updateEndpointHint() {
   const p = { type: $('#pv-type').value, baseUrl: $('#pv-url').value.trim() };
   $('#pv-url').placeholder = DEFAULT_BASE[p.type];
   $('#pv-name').placeholder = hostOf(p);
-  $('#pv-endpoint').textContent = p.baseUrl && !/^https?:\/\//i.test(p.baseUrl)
-    ? t('invalidUrl')
-    : t('endpoint', apiURL(p, 'chat')) + ($('#pv-proxy').checked ? ' · ' + t('viaProxy') : '');
+  $('#pv-endpoint').textContent = p.baseUrl && !/^https?:\/\//i.test(p.baseUrl) ? t('invalidUrl') : t('endpoint', apiURL(p, 'chat'));
 }
 $('#pv-type').onchange = updateEndpointHint;
 $('#pv-url').oninput = updateEndpointHint;
-$('#pv-proxy').onchange = updateEndpointHint;
 
 function renderPicker() {
   const q = $('#pv-filter').value.trim().toLowerCase();
