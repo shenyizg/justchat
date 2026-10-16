@@ -96,6 +96,7 @@ header { flex: none; display: flex; align-items: center; gap: 2px; height: 52px;
 .msg.assistant .bubble { overflow-wrap: break-word; }
 .msg .images { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-bottom: 6px; }
 .msg .images img { width: 128px; height: 128px; object-fit: cover; border-radius: 12px; cursor: zoom-in; display: block; }
+.msg .files { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-bottom: 6px; max-width: 85%; }
 .msg-foot { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 30px; color: var(--fg-3); }
 .msg.user .msg-foot { flex-direction: row-reverse; }
 .msg-actions { display: flex; flex: none; opacity: 0; transition: opacity .15s; }
@@ -161,7 +162,7 @@ details.think.live > summary span { animation: pulse 1.6s ease-in-out infinite; 
 
 /* Composer */
 footer { position: relative; flex: none; padding: 0 16px calc(12px + env(safe-area-inset-bottom)); }
-.composer { max-width: 800px; margin: 0 auto; padding: 6px; border: 1px solid var(--line); border-radius: 22px; background: var(--bg); box-shadow: 0 2px 12px rgba(0,0,0,.05); }
+.composer { max-width: 800px; margin: 0 auto; padding: 6px 8px; border: 1px solid var(--line); border-radius: 22px; background: var(--bg); box-shadow: 0 2px 12px rgba(0,0,0,.05); }
 .composer:focus-within { border-color: var(--fg-3); }
 .composer.drag { border-color: var(--accent); border-style: dashed; }
 #thumbs { display: flex; flex-wrap: wrap; gap: 10px; padding: 8px 8px 4px; }
@@ -169,8 +170,22 @@ footer { position: relative; flex: none; padding: 0 16px calc(12px + env(safe-ar
 .thumb img { display: block; width: 56px; height: 56px; object-fit: cover; border-radius: 10px; }
 .thumb button { position: absolute; top: -6px; right: -6px; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--fg); color: var(--bg); }
 .thumb button svg.i { width: 12px; height: 12px; stroke-width: 3; }
-.composer-row { display: flex; align-items: flex-end; gap: 4px; }
-#input { flex: 1; min-width: 0; max-height: 40vh; padding: 7px 6px; border: 0; outline: none; resize: none; background: transparent; line-height: 1.5; }
+.file-chip { display: flex; align-items: center; gap: 8px; max-width: 240px; height: 56px; padding: 0 12px 0 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-2); text-align: left; cursor: pointer; }
+.file-chip > svg.i { width: 22px; height: 22px; color: var(--fg-3); }
+.file-chip > div { display: flex; flex-direction: column; min-width: 0; line-height: 1.35; }
+.file-chip .fname { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; color: var(--fg); }
+.file-chip .fmeta { font-size: 12px; color: var(--fg-3); }
+.file-chip.reading { cursor: default; opacity: .7; }
+#input { display: block; width: 100%; max-height: 40vh; padding: 8px 6px 4px; border: 0; outline: none; resize: none; background: transparent; line-height: 1.5; }
+.composer-bar { display: flex; align-items: center; gap: 2px; }
+.composer-bar .spacer { flex: 1; }
+.effort { position: relative; display: inline-flex; align-items: center; gap: 4px; height: 32px; margin-left: 2px; padding: 0 8px; border-radius: 16px; color: var(--fg-2); font-size: 13px; white-space: nowrap; }
+.effort:hover { background: var(--hover); color: var(--fg); }
+.effort.on { color: var(--accent); }
+.effort svg.i { width: 16px; height: 16px; }
+.effort .chev { width: 14px; height: 14px; color: var(--fg-3); }
+.effort select { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; opacity: 0; font-size: 16px; cursor: pointer; }
+.effort:has(select:focus-visible) { outline: 2px solid var(--accent); }
 #send { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex: none; border-radius: 50%; background: var(--fg); color: var(--bg); }
 #send:disabled { opacity: .25; cursor: default; }
 
@@ -190,7 +205,7 @@ dialog::backdrop { background: rgba(0,0,0,.4); }
 .field textarea { resize: vertical; line-height: 1.5; }
 .field .mono, .mono { font-family: var(--mono); font-size: 13px; }
 .secret:not(:focus) { -webkit-text-security: disc; }
-.field.check { flex-direction: row; align-items: center; gap: 8px; margin-top: 26px; color: var(--fg); }
+.field.check { flex-direction: row; align-items: center; gap: 8px; margin-top: 4px; color: var(--fg); }
 .field.check input { width: 16px; height: 16px; margin: 0; }
 .field-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
@@ -218,6 +233,9 @@ section h4 { margin: 0 0 12px; font-size: 14px; font-weight: 600; }
 .picker-list label { display: flex; align-items: center; gap: 8px; padding: 4px 10px; color: var(--fg); font: 13px var(--mono); cursor: pointer; overflow-wrap: anywhere; }
 .picker-list label:hover { background: var(--hover); }
 details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2); cursor: pointer; }
+#dlg-file { width: min(760px, calc(100vw - 24px)); }
+#file-title { overflow: hidden; padding-right: 8px; white-space: nowrap; text-overflow: ellipsis; }
+#file-text { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.6 var(--mono); color: var(--fg-2); }
 #dlg-img { width: auto; max-width: calc(100vw - 24px); background: transparent; box-shadow: none; }
 #dlg-img img { display: block; max-width: 100%; max-height: calc(100dvh - 48px); border-radius: 10px; cursor: zoom-out; }
 .toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom)); z-index: 100; max-width: calc(100vw - 32px); padding: 8px 16px; border-radius: 20px; background: var(--fg); color: var(--bg); font-size: 14px; box-shadow: var(--shadow); opacity: 0; transform: translateX(-50%); transition: opacity .2s; pointer-events: none; }
@@ -232,6 +250,7 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
   body.side-open #overlay { display: block; position: fixed; inset: 0; z-index: 25; background: rgba(0,0,0,.35); }
   #msgs { padding: 4px 14px 20px; }
   footer { padding: 0 10px calc(8px + env(safe-area-inset-bottom)); }
+  .effort-label { display: none; }
   /* iOS zooms into any focused field under 16px */
   input, select, textarea, .field input:not([type="checkbox"]), .field select, .field textarea,
   .side-search input, #model-select, .field .mono { font-size: 16px; }
@@ -245,7 +264,7 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <!-- Icons adapted from Feather (MIT) -->
+  <!-- Icons adapted from Feather (MIT) and Lucide (ISC) -->
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
@@ -260,6 +279,9 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-clip" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/></symbol>
 </svg>
 
 <div id="app">
@@ -290,13 +312,22 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
       <button class="icon-btn" id="to-bottom" hidden data-i18n-title="scrollBottom"><svg class="i"><use href="#i-arrow-down"/></svg></button>
       <div class="composer" id="composer">
         <div id="thumbs" hidden></div>
-        <div class="composer-row">
+        <textarea id="input" rows="1" data-i18n-placeholder="inputPlaceholder"></textarea>
+        <div class="composer-bar">
           <button class="icon-btn" id="btn-attach" data-i18n-title="attachImage"><svg class="i"><use href="#i-image"/></svg></button>
-          <textarea id="input" rows="1" data-i18n-placeholder="inputPlaceholder"></textarea>
+          <button class="icon-btn" id="btn-file" data-i18n-title="attachFile"><svg class="i"><use href="#i-clip"/></svg></button>
+          <div class="effort" id="effort">
+            <svg class="i"><use href="#i-bulb"/></svg>
+            <span><span class="effort-label" data-i18n="reasoningShort"></span><span id="effort-value"></span></span>
+            <svg class="i chev"><use href="#i-down"/></svg>
+            <select id="effort-select" data-i18n-title="reasoning"></select>
+          </div>
+          <span class="spacer"></span>
           <button id="send" data-i18n-title="send"><svg class="i"><use href="#i-up"/></svg></button>
         </div>
       </div>
       <input type="file" id="file-input" accept="image/*" multiple hidden>
+      <input type="file" id="doc-input" multiple hidden>
     </footer>
   </main>
 </div>
@@ -310,7 +341,6 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
       <label class="field"><span data-i18n="topP"></span><input id="cs-topP" type="number" inputmode="decimal" min="0" max="1" step="any"></label>
       <label class="field"><span data-i18n="maxTokens"></span><input id="cs-maxTokens" type="number" inputmode="numeric" min="1" step="1"></label>
       <label class="field"><span data-i18n="context"></span><input id="cs-context" type="number" inputmode="numeric" min="1" step="1"></label>
-      <label class="field"><span data-i18n="reasoning"></span><select id="cs-reasoning"></select></label>
       <label class="field check"><input id="cs-stream" type="checkbox"><span data-i18n="stream"></span></label>
     </div>
     <p class="hint" data-i18n="paramsHint"></p>
@@ -387,6 +417,11 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
 </dialog>
 
 <dialog id="dlg-img"><img alt=""></dialog>
+
+<dialog id="dlg-file">
+  <div class="dlg-head"><h3 id="file-title"></h3><button class="icon-btn" data-close data-i18n-title="close"><svg class="i"><use href="#i-x"/></svg></button></div>
+  <div class="dlg-body"><pre id="file-text"></pre></div>
+</dialog>
 <div class="toast" id="toast" role="status"></div>
 <script nonce="justchat">
 'use strict';
@@ -488,6 +523,13 @@ const I18N = {
     networkError: 'Could not reach {0} ({1}). Check the base URL and your network connection.',
     usage: '{0} in · {1} out', storageError: 'Could not save: {0}', storageMissing: 'Browser storage is unavailable. Nothing will be saved.',
     imageError: 'Could not read the image', version: 'JustChat {0} · Data stays in this browser',
+    attachFile: 'Attach files', reasoningShort: 'Reasoning: ', effortDefault: 'Default', effortNone: 'Off', effortMinimal: 'Minimal',
+    effortLow: 'Low', effortMedium: 'Medium', effortHigh: 'High', effortXhigh: 'Extra high', effortMax: 'Max',
+    reading: 'Reading…', fileChars: '{0} chars', fileStillReading: 'Wait until the files have been read',
+    fileTooLarge: '{0} is larger than 30 MB', fileUnsupported: '{0}: this type of file can\'t be read',
+    fileOldOffice: '{0}: old Office format. Save it as .docx, .xlsx or .pptx first.',
+    pdfEncrypted: '{0} is encrypted and can\'t be read', pdfNoText: '{0}: no text found. It may be a scanned document.',
+    fileEmpty: '{0} has no text', fileError: 'Could not read {0} ({1})',
   },
   zh: {
     newChat: '新对话', search: '搜索', settings: '设置', toggleSidebar: '切换侧边栏', model: '模型',
@@ -525,6 +567,13 @@ const I18N = {
     networkError: '无法连接 {0}（{1}）。请检查 Base URL 和网络连接。',
     usage: '输入 {0} · 输出 {1}', storageError: '保存失败：{0}', storageMissing: '浏览器存储不可用，数据将不会被保存。',
     imageError: '无法读取图片', version: 'JustChat {0} · 数据仅保存在本浏览器',
+    attachFile: '添加文件', reasoningShort: '推理：', effortDefault: '默认', effortNone: '关闭', effortMinimal: '最少',
+    effortLow: '低', effortMedium: '中', effortHigh: '高', effortXhigh: '超高', effortMax: '最高',
+    reading: '读取中…', fileChars: '{0} 字', fileStillReading: '文件还在读取中',
+    fileTooLarge: '{0} 超过 30 MB', fileUnsupported: '{0}：不支持这种文件类型',
+    fileOldOffice: '{0}：旧版 Office 格式，请先另存为 .docx、.xlsx 或 .pptx',
+    pdfEncrypted: '{0} 已加密，无法读取', pdfNoText: '{0}：没有找到文字，可能是扫描件',
+    fileEmpty: '{0} 没有文字内容', fileError: '无法读取 {0}（{1}）',
   },
 };
 let L = I18N.en;
@@ -1067,11 +1116,14 @@ function apiHeaders(p, json) {
   return Object.assign(h, parseObj(p.headers, t('extraHeaders')));
 }
 
+// Attached documents go before the user's text, each wrapped in a <file> block.
+const withFiles = m => [...(m.files || []).map(f => `<file name="${f.name}">\n${f.text}\n</file>`), m.content].filter(Boolean).join('\n\n');
+
 // Messages sent as context: non-empty, starting and ending with a user turn, roles alternating.
 function contextMessages(chat) {
   let list = chat.messages.map(m => ({
     role: m.role,
-    content: m.role === 'assistant' ? (splitThink(m.content) || m).content.trim() : m.content,
+    content: m.role === 'assistant' ? (splitThink(m.content) || m).content.trim() : withFiles(m),
     images: m.role === 'user' && m.images && m.images.length ? m.images : null,
   })).filter(m => m.content.trim() || m.images);
   const limit = chat.options.context;
@@ -1295,17 +1347,765 @@ async function readImage(file) {
   return canvas.toDataURL('image/jpeg', 0.9);
 }
 
+// ---------- Documents: plain-text extraction for PDF, Word, Excel, PowerPoint and text files ----------
+// Everything runs in the browser; only the extracted text is sent to the model.
+const documents = (() => {
+  const MAX_SIZE = 30 * 1024 * 1024;
+  const utf8 = new TextDecoder('utf-8');
+  const fail = (key, name, detail) => { throw new Error(t(key, name, detail)); };
+
+  // Bytes <-> "binary strings" (one char per byte) for the PDF tokenizer.
+  const toStr = u8 => {
+    let s = '';
+    for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000));
+    return s;
+  };
+
+  // Tolerant inflate: keeps whatever was decoded before an error, e.g. from a truncated stream.
+  async function inflate(bytes, raw) {
+    const reader = new Blob([bytes]).stream().pipeThrough(new DecompressionStream(raw ? 'deflate-raw' : 'deflate')).getReader();
+    const chunks = [];
+    let size = 0;
+    try {
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        size += value.length;
+      }
+    } catch (e) { /* partial data is still useful */ }
+    const out = new Uint8Array(size);
+    let at = 0;
+    for (const c of chunks) { out.set(c, at); at += c.length; }
+    return out;
+  }
+
+  // ----- ZIP (docx / xlsx / pptx) -----
+  function unzip(buf) {
+    const u8 = new Uint8Array(buf);
+    const dv = new DataView(buf);
+    let end = -1;
+    for (let i = u8.length - 22; i >= Math.max(0, u8.length - 65557); i--) {
+      if (dv.getUint32(i, true) === 0x06054b50) { end = i; break; }
+    }
+    if (end < 0) return null;
+    const entries = new Map();
+    let p = dv.getUint32(end + 16, true);
+    for (let n = dv.getUint16(end + 10, true); n > 0 && dv.getUint32(p, true) === 0x02014b50; n--) {
+      const nameLen = dv.getUint16(p + 28, true);
+      entries.set(utf8.decode(u8.subarray(p + 46, p + 46 + nameLen)), {
+        method: dv.getUint16(p + 10, true), size: dv.getUint32(p + 20, true), offset: dv.getUint32(p + 42, true),
+      });
+      p += 46 + nameLen + dv.getUint16(p + 30, true) + dv.getUint16(p + 32, true);
+    }
+    const read = async name => {
+      const e = entries.get(name);
+      if (!e) return null;
+      const start = e.offset + 30 + dv.getUint16(e.offset + 26, true) + dv.getUint16(e.offset + 28, true);
+      const data = u8.subarray(start, start + e.size);
+      return e.method === 8 ? inflate(data, true) : e.method === 0 ? data : null;
+    };
+    const xml = async name => {
+      const data = await read(name);
+      return data && new DOMParser().parseFromString(utf8.decode(data), 'application/xml');
+    };
+    return { has: name => entries.has(name), names: [...entries.keys()], xml };
+  }
+
+  const tags = (node, name) => [...node.getElementsByTagNameNS('*', name)];
+  const relTargets = async (zip, relsPath, baseDir) => {
+    const map = {};
+    const rels = await zip.xml(relsPath);
+    if (rels) for (const r of tags(rels, 'Relationship')) {
+      const target = r.getAttribute('Target') || '';
+      map[r.getAttribute('Id')] = target.startsWith('/') ? target.slice(1) : baseDir + target;
+    }
+    return map;
+  };
+  const relId = el => el.getAttribute('r:id') || [...el.attributes].find(a => a.localName === 'id' && a.prefix)?.value;
+
+  async function docx(zip) {
+    const doc = await zip.xml('word/document.xml');
+    const lines = [];
+    const para = p => {
+      let text = '';
+      const walk = el => {
+        for (const c of el.children) {
+          const n = c.localName;
+          if (n === 't') text += c.textContent;
+          else if (n === 'tab') text += '\t';
+          else if (n === 'br' || n === 'cr') text += '\n';
+          else if (n === 'AlternateContent') { if (c.firstElementChild) walk(c.firstElementChild); } // skip the Fallback copy
+          else if (n === 'txbxContent') { const inner = []; block(c, inner); text += inner.join('\n'); }
+          else if (!['pPr', 'rPr', 'instrText', 'delText', 'fldSimple'].includes(n)) walk(c);
+        }
+      };
+      walk(p);
+      const style = (tags(p, 'pStyle')[0] || { getAttribute: () => '' }).getAttribute('w:val') || '';
+      const heading = /^(heading|title)(\d?)$/i.exec(style);
+      if (heading && text.trim()) return '#'.repeat(Math.min(Number(heading[2]) || 1, 6)) + ' ' + text;
+      if ((tags(p, 'numPr').length || /^List/i.test(style)) && text.trim()) return '- ' + text;
+      return text;
+    };
+    const block = (el, out) => {
+      for (const c of el.children) {
+        if (c.localName === 'p') out.push(para(c));
+        else if (c.localName === 'tbl') {
+          for (const tr of c.children) {
+            if (tr.localName !== 'tr') continue;
+            out.push([...tr.children].filter(tc => tc.localName === 'tc').map(tc => {
+              const cell = [];
+              block(tc, cell);
+              return cell.join(' ').replace(/\s+/g, ' ').trim();
+            }).join(' | '));
+          }
+          out.push('');
+        } else if (c.localName !== 'sectPr') block(c, out);
+      }
+    };
+    const body = tags(doc, 'body')[0];
+    if (body) block(body, lines);
+    return lines.join('\n');
+  }
+
+  // Numbers are stored raw; a cell's number format says whether it's a date (a day count) or a percentage.
+  const builtinFormat = id => (id === 9 || id === 10 ? '0%'
+    : id === 22 ? 'yyyy-mm-dd hh:mm'
+    : (id >= 14 && id <= 17) || (id >= 27 && id <= 31) || id === 36 || (id >= 50 && id <= 58) ? 'yyyy-mm-dd'
+    : (id >= 18 && id <= 21) || (id >= 32 && id <= 35) || (id >= 45 && id <= 47) ? 'hh:mm:ss' : '');
+  function formatNumber(raw, code = '', date1904 = false) {
+    const n = Number(raw);
+    if (!raw.trim() || !isFinite(n)) return raw;
+    const plain = code.replace(/"[^"]*"|\\.|\[[^\]]*\]/g, ''); // without literal text, escapes and [Red]-style sections
+    if (/[dmyhs]/i.test(plain) && n >= 0 && n < 2958466) {
+      const iso = new Date(Math.round((n + (date1904 ? 1462 : 0) - 25569) * 864e5)).toISOString();
+      const time = /[hs]/i.test(plain);
+      const date = /[dy]/i.test(plain) || !time;
+      return date && time ? iso.slice(0, 16).replace('T', ' ') : time ? iso.slice(11, 19) : iso.slice(0, 10);
+    }
+    if (plain.includes('%')) return +(n * 100).toPrecision(12) + '%';
+    return String(n);
+  }
+
+  async function xlsx(zip) {
+    const styles = await zip.xml('xl/styles.xml');
+    const custom = {};
+    if (styles) for (const f of tags(styles, 'numFmt')) custom[f.getAttribute('numFmtId')] = f.getAttribute('formatCode') || '';
+    const xfs = styles && tags(styles, 'cellXfs')[0];
+    const formats = xfs ? [...xfs.children].filter(x => x.localName === 'xf').map(xf => {
+      const id = xf.getAttribute('numFmtId') || '0';
+      return custom[id] ?? builtinFormat(Number(id));
+    }) : [];
+    const workbook = await zip.xml('xl/workbook.xml');
+    const props = workbook && tags(workbook, 'workbookPr')[0];
+    const date1904 = !!props && /^(1|true)$/.test(props.getAttribute('date1904') || '');
+    const shared = [];
+    const ss = await zip.xml('xl/sharedStrings.xml');
+    if (ss) for (const si of tags(ss, 'si')) shared.push(tags(si, 't').filter(x => x.parentNode.localName !== 'rPh').map(x => x.textContent).join(''));
+    const targets = await relTargets(zip, 'xl/_rels/workbook.xml.rels', 'xl/');
+    const colIndex = ref => { let n = 0; for (const ch of (ref || '').replace(/\d+$/, '')) n = n * 26 + ch.charCodeAt(0) - 64; return n - 1; };
+    const out = [];
+    for (const sheet of workbook ? tags(workbook, 'sheet') : []) {
+      const doc = await zip.xml(targets[relId(sheet)] || '');
+      if (!doc) continue;
+      const rows = [];
+      for (const row of tags(doc, 'row')) {
+        const cells = [];
+        for (const c of tags(row, 'c')) {
+          const v = tags(c, 'v')[0];
+          const type = c.getAttribute('t');
+          const value = type === 's' ? shared[Number(v && v.textContent)] ?? ''
+            : type === 'inlineStr' ? tags(c, 't').map(x => x.textContent).join('')
+            : type === 'b' ? (v && v.textContent === '1' ? 'TRUE' : 'FALSE')
+            : !v ? ''
+            : !type || type === 'n' ? formatNumber(v.textContent, formats[Number(c.getAttribute('s')) || 0], date1904)
+            : v.textContent;
+          const col = colIndex(c.getAttribute('r'));
+          cells[col >= 0 ? col : cells.length] = value;
+        }
+        if (cells.some(x => x)) rows.push(Array.from(cells, x => x ?? '').join('\t'));
+      }
+      out.push(`## ${sheet.getAttribute('name')}\n${rows.join('\n')}`);
+    }
+    return out.join('\n\n');
+  }
+
+  async function pptx(zip) {
+    const targets = await relTargets(zip, 'ppt/_rels/presentation.xml.rels', 'ppt/');
+    const pres = await zip.xml('ppt/presentation.xml');
+    let slides = pres ? tags(pres, 'sldId').map(s => targets[relId(s)]).filter(Boolean) : [];
+    if (!slides.length) slides = zip.names.filter(n => /^ppt\/slides\/slide\d+\.xml$/.test(n)).sort((a, b) => parseInt(a.slice(16), 10) - parseInt(b.slice(16), 10));
+    const out = [];
+    for (const [i, path] of slides.entries()) {
+      const doc = await zip.xml(path);
+      if (!doc) continue;
+      const text = tags(doc, 'p').map(p => tags(p, 't').map(x => x.textContent).join('')).filter(x => x.trim()).join('\n');
+      out.push(`## Slide ${i + 1}\n${text}`);
+    }
+    return out.join('\n\n');
+  }
+
+  // ----- PDF -----
+  const DELIM = /[\s()<>[\]{}/%]/;
+  const RADICALS = new Map('⺟母⺠民⻁虎⻄西⻅见⻆角⻉贝⻋车⻑長⻓长⻔门⻘青⻙韦⻚页⻛风⻜飞⻝食⻢马⻣骨⻤鬼⻥鱼⻦鸟⻧卤⻨麦⻩黄⻪黾⻬齐⻮齿⻰龙⻳龟'.match(/../gu).map(pair => [...pair]));
+  // Predefined CJK encodings, for fonts without a ToUnicode CMap: [name, charset, bytes per code from the lead bytes].
+  const LEGACY = [
+    [/^\/(GB|GBpc|GBK|GBKp)-EUC-|^\/GBK2K-/, 'gbk', (b, b2) => (b < 0x81 || b > 0xfe ? 1 : b2 >= 0x30 && b2 <= 0x39 ? 4 : 2)],
+    [/-B5-|^\/B5pc-/, 'big5', b => (b >= 0x81 && b <= 0xfe ? 2 : 1)],
+    [/-RKSJ-/, 'shift_jis', b => ((b >= 0x81 && b <= 0x9f) || (b >= 0xe0 && b <= 0xfc) ? 2 : 1)],
+    [/^\/EUC-[HV]$/, 'euc-jp', b => (b === 0x8f ? 3 : b === 0x8e || (b >= 0xa1 && b <= 0xfe) ? 2 : 1)],
+    [/^\/KSC(-EUC|pc-EUC|ms-UHC)-/, 'euc-kr', b => (b >= 0x81 && b <= 0xfe ? 2 : 1)],
+  ];
+  const WIN = [...new TextDecoder('windows-1252').decode(Uint8Array.from({ length: 256 }, (_, i) => i))];
+  const MAC = [...new TextDecoder('macintosh').decode(Uint8Array.from({ length: 256 }, (_, i) => i))];
+  const GLYPHS = {
+    space: ' ', exclam: '!', quotedbl: '"', numbersign: '#', dollar: '$', percent: '%', ampersand: '&', quotesingle: "'",
+    quoteright: '’', quoteleft: '‘', parenleft: '(', parenright: ')', asterisk: '*', plus: '+', comma: ',', hyphen: '-',
+    minus: '−', period: '.', slash: '/', colon: ':', semicolon: ';', less: '<', equal: '=', greater: '>', question: '?',
+    at: '@', bracketleft: '[', backslash: '\\', bracketright: ']', asciicircum: '^', underscore: '_', grave: '`',
+    braceleft: '{', bar: '|', braceright: '}', asciitilde: '~', bullet: '•', endash: '–', emdash: '—', ellipsis: '…',
+    quotedblleft: '“', quotedblright: '”', quotesinglbase: '‚', quotedblbase: '„', dagger: '†', daggerdbl: '‡',
+    fi: 'fi', fl: 'fl', ff: 'ff', ffi: 'ffi', ffl: 'ffl', degree: '°', copyright: '©', registered: '®', trademark: '™',
+    section: '§', paragraph: '¶', periodcentered: '·', multiply: '×', divide: '÷', plusminus: '±', Euro: '€',
+    sterling: '£', yen: '¥', cent: '¢', dotlessi: 'ı', nbspace: '\u00a0',
+    zero: '0', one: '1', two: '2', three: '3', four: '4', five: '5', six: '6', seven: '7', eight: '8', nine: '9',
+  };
+  function glyphChar(name) {
+    if (GLYPHS[name] !== undefined) return GLYPHS[name];
+    if (/^[A-Za-z]$/.test(name)) return name;
+    let m = /^uni((?:[0-9A-F]{4})+)$/.exec(name);
+    if (m) return m[1].match(/.{4}/g).map(h => String.fromCharCode(parseInt(h, 16))).join('');
+    if ((m = /^u([0-9A-F]{4,6})$/.exec(name))) return String.fromCodePoint(parseInt(m[1], 16));
+    const base = name.split('.')[0];
+    if (base && base !== name) return glyphChar(base);
+    if (name.includes('_')) return name.split('_').map(glyphChar).join('');
+    return undefined;
+  }
+  // PDF text strings: UTF-16BE or UTF-8 with a byte order mark, otherwise PDFDocEncoding.
+  function textString(s) {
+    const bytes = Uint8Array.from(s, c => c.charCodeAt(0));
+    if (bytes[0] === 0xfe && bytes[1] === 0xff) return new TextDecoder('utf-16be').decode(bytes.subarray(2));
+    if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) return utf8.decode(bytes.subarray(3));
+    return [...s].map(c => WIN[c.charCodeAt(0)]).join('');
+  }
+
+  class Lexer {
+    constructor(s, pos = 0) { this.s = s; this.pos = pos; }
+    skip() {
+      const s = this.s;
+      while (this.pos < s.length) {
+        const c = s.charCodeAt(this.pos);
+        if (c === 32 || c === 10 || c === 13 || c === 9 || c === 12 || c === 0) this.pos++;
+        else if (c === 37) { while (this.pos < s.length && s[this.pos] !== '\n' && s[this.pos] !== '\r') this.pos++; }
+        else break;
+      }
+    }
+    // Values: numbers, '/Names', {s: string}, {r: objnum}, arrays, dicts, booleans, null, {op: keyword}.
+    value() {
+      this.skip();
+      const s = this.s;
+      const c = s[this.pos];
+      if (c === undefined) return undefined;
+      if (c === '<' && s[this.pos + 1] === '<') {
+        this.pos += 2;
+        const d = {};
+        for (;;) {
+          this.skip();
+          if (this.pos >= s.length) return d;
+          if (s[this.pos] === '>' && s[this.pos + 1] === '>') { this.pos += 2; return d; }
+          const key = this.value();
+          if (typeof key === 'string' && key[0] === '/') d[key.slice(1)] = this.value();
+        }
+      }
+      if (c === '[') {
+        this.pos++;
+        const a = [];
+        for (;;) {
+          this.skip();
+          if (this.pos >= s.length) return a;
+          if (s[this.pos] === ']') { this.pos++; return a; }
+          a.push(this.value());
+        }
+      }
+      if (c === '(') return { s: this.literal() };
+      if (c === '<') {
+        const end = s.indexOf('>', this.pos);
+        let hex = s.slice(this.pos + 1, end < 0 ? s.length : end).replace(/[^0-9a-fA-F]/g, '');
+        if (hex.length % 2) hex += '0';
+        this.pos = end < 0 ? s.length : end + 1;
+        let str = '';
+        for (let i = 0; i < hex.length; i += 2) str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+        return { s: str };
+      }
+      if (c === '/') {
+        let e = this.pos + 1;
+        while (e < s.length && !DELIM.test(s[e])) e++;
+        const name = s.slice(this.pos, e).replace(/#([0-9a-fA-F]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16)));
+        this.pos = e;
+        return name;
+      }
+      let e = this.pos;
+      while (e < s.length && !DELIM.test(s[e])) e++;
+      if (e === this.pos) { this.pos++; return { op: c }; } // stray delimiter
+      const tok = s.slice(this.pos, e);
+      this.pos = e;
+      if (/^[+-]?(\d+\.?\d*|\.\d+)$/.test(tok)) {
+        if (/^\d+$/.test(tok)) {
+          const ref = /^\s+\d+\s+R(?![^\s()<>[\]{}/%])/.exec(s.slice(e, e + 24));
+          if (ref) { this.pos = e + ref[0].length; return { r: Number(tok) }; }
+        }
+        return parseFloat(tok);
+      }
+      if (tok === 'true') return true;
+      if (tok === 'false') return false;
+      if (tok === 'null') return null;
+      return { op: tok };
+    }
+    literal() {
+      const s = this.s;
+      const esc = { n: '\n', r: '\r', t: '\t', b: '\b', f: '\f' };
+      let depth = 0;
+      let out = '';
+      let i = this.pos;
+      for (; i < s.length; i++) {
+        const ch = s[i];
+        if (ch === '\\') {
+          const n = s[++i];
+          if (esc[n]) out += esc[n];
+          else if (n >= '0' && n <= '7') {
+            let oct = n;
+            while (oct.length < 3 && s[i + 1] >= '0' && s[i + 1] <= '7') oct += s[++i];
+            out += String.fromCharCode(parseInt(oct, 8) & 255);
+          } else if (n === '\r') { if (s[i + 1] === '\n') i++; }
+          else if (n !== '\n') out += n;
+        } else if (ch === '(') { if (depth++) out += ch; }
+        else if (ch === ')') { if (--depth === 0) { i++; break; } out += ch; }
+        else out += ch;
+      }
+      this.pos = i;
+      return out;
+    }
+  }
+
+  function parseCMap(text) {
+    const map = new Map();
+    let bytes = 1;
+    const hexes = str => [...str.matchAll(/<([0-9a-fA-F\s]*)>/g)].map(m => m[1].replace(/\s/g, ''));
+    const unicode = h => {
+      if (h.length <= 2) return String.fromCharCode(parseInt(h || '0', 16));
+      let out = '';
+      for (let i = 0; i + 3 < h.length; i += 4) out += String.fromCharCode(parseInt(h.substr(i, 4), 16));
+      return out;
+    };
+    for (const m of text.matchAll(/begincodespacerange([\s\S]*?)endcodespacerange/g)) for (const h of hexes(m[1])) bytes = Math.max(bytes, h.length >> 1);
+    for (const m of text.matchAll(/beginbfchar([\s\S]*?)endbfchar/g)) {
+      const h = hexes(m[1]);
+      for (let i = 0; i + 1 < h.length; i += 2) map.set(parseInt(h[i], 16), unicode(h[i + 1]));
+    }
+    for (const m of text.matchAll(/beginbfrange([\s\S]*?)endbfrange/g)) {
+      for (const e of m[1].matchAll(/<([0-9a-fA-F]+)>\s*<([0-9a-fA-F]+)>\s*(?:<([0-9a-fA-F]*)>|\[([^\]]*)\])/g)) {
+        const lo = parseInt(e[1], 16);
+        const hi = Math.min(parseInt(e[2], 16), lo + 65535);
+        if (e[3] !== undefined) {
+          const dst = unicode(e[3]);
+          const last = dst.charCodeAt(dst.length - 1);
+          for (let c = lo; c <= hi; c++) map.set(c, dst.slice(0, -1) + String.fromCharCode(last + c - lo));
+        } else {
+          hexes(e[4]).forEach((h, i) => { if (lo + i <= hi) map.set(lo + i, unicode(h)); });
+        }
+      }
+    }
+    return { map, bytes };
+  }
+
+  async function pdf(u8, name) {
+    const src = toStr(u8);
+    if (/\/Encrypt\s*\d+\s+\d+\s+R/.test(src)) fail('pdfEncrypted', name);
+
+    // Collect every "n g obj" in the file (later definitions win, like incremental updates).
+    const objs = new Map();
+    const re = /(\d+)\s+(\d+)\s+obj\b/g;
+    let m;
+    while ((m = re.exec(src))) {
+      const lex = new Lexer(src, re.lastIndex);
+      let value;
+      try { value = lex.value(); } catch (e) { continue; }
+      const after = /^\s*stream\r?\n?/.exec(src.slice(lex.pos, lex.pos + 32));
+      if (after && value && typeof value === 'object' && !Array.isArray(value)) {
+        const start = lex.pos + after[0].length;
+        const len = typeof value.Length === 'number' ? value.Length : -1;
+        let end = len >= 0 && /^\s*endstream/.test(src.slice(start + len, start + len + 32)) ? start + len : src.indexOf('endstream', start);
+        if (end < 0) end = src.length;
+        else if (end !== start + len) end = Math.max(start, end - (/\r?\n$|\r$/.exec(src.slice(end - 2, end)) || [''])[0].length); // the end-of-line marker isn't data
+        Object.defineProperty(value, 'stream', { value: [start, end] });
+        re.lastIndex = end;
+      } else {
+        re.lastIndex = lex.pos;
+      }
+      objs.set(Number(m[1]), value);
+    }
+    const get = v => {
+      for (let i = 0; i < 32 && v && typeof v === 'object' && 'r' in v; i++) v = objs.get(v.r);
+      return v;
+    };
+    const ascii85 = bytes => {
+      const out = [];
+      let group = [];
+      for (const b of bytes) {
+        if (b === 0x7e) break; // ~>
+        if (b === 0x7a && !group.length) { out.push(0, 0, 0, 0); continue; } // z
+        if (b < 33 || b > 117) continue;
+        group.push(b - 33);
+        if (group.length === 5) {
+          let n = 0;
+          for (const d of group) n = n * 85 + d;
+          out.push(n >>> 24, (n >>> 16) & 255, (n >>> 8) & 255, n & 255);
+          group = [];
+        }
+      }
+      if (group.length) {
+        const k = group.length;
+        while (group.length < 5) group.push(84);
+        let n = 0;
+        for (const d of group) n = n * 85 + d;
+        out.push(...[n >>> 24, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].slice(0, k - 1));
+      }
+      return Uint8Array.from(out);
+    };
+    const streamText = async dict => {
+      if (!dict || !dict.stream) return '';
+      // Prefer the declared length (often an indirect object): Firefox and Safari discard everything
+      // inflated from a stream that has extra bytes after its end.
+      const [start, scanned] = dict.stream;
+      const len = get(dict.Length);
+      const exact = typeof len === 'number' && len >= 0 && /^\s*endstream/.test(src.slice(start + len, start + len + 32));
+      let bytes = u8.subarray(start, exact ? start + len : scanned);
+      let filters = get(dict.Filter);
+      filters = !filters ? [] : Array.isArray(filters) ? filters.map(get) : [filters];
+      for (const f of filters) {
+        if (f === '/FlateDecode' || f === '/Fl') bytes = await inflate(bytes);
+        else if (f === '/ASCII85Decode' || f === '/A85') bytes = ascii85(bytes);
+        else if (f === '/ASCIIHexDecode' || f === '/AHx') {
+          const hex = toStr(bytes).replace(/[^0-9a-fA-F]/g, '');
+          bytes = Uint8Array.from(hex.match(/../g) || [], h => parseInt(h, 16));
+        } else return ''; // images and other encodings carry no text
+      }
+      return toStr(bytes);
+    };
+
+    // Objects packed into object streams (PDF 1.5+).
+    for (const value of [...objs.values()]) {
+      if (!value || value.Type !== '/ObjStm' || !value.stream) continue;
+      const data = await streamText(value);
+      const head = new Lexer(data);
+      const first = get(value.First) || 0;
+      const count = get(value.N) || 0;
+      for (let i = 0; i < count; i++) {
+        const num = head.value();
+        const offset = head.value();
+        if (typeof num !== 'number' || typeof offset !== 'number') break;
+        if (!objs.has(num)) {
+          try { objs.set(num, new Lexer(data, first + offset).value()); } catch (e) { /* skip */ }
+        }
+      }
+    }
+
+    // Pages in document order, with inherited resources.
+    const pages = [];
+    const seen = new Set();
+    const walk = (node, res) => {
+      node = get(node);
+      if (!node || typeof node !== 'object' || seen.has(node)) return;
+      seen.add(node);
+      const resources = node.Resources !== undefined ? node.Resources : res;
+      const kids = get(node.Kids);
+      if (Array.isArray(kids)) kids.forEach(k => walk(k, resources));
+      else if (node.Type === '/Page' || node.Contents) pages.push({ page: node, res: resources });
+    };
+    const roots = [...src.matchAll(/\/Root\s+(\d+)\s+\d+\s+R/g)];
+    if (roots.length) walk(get(get({ r: Number(roots[roots.length - 1][1]) }) || {}).Pages, undefined);
+    if (!pages.length) {
+      [...objs.entries()].sort((a, b) => a[0] - b[0]).forEach(([, v]) => { if (v && v.Type === '/Page') pages.push({ page: v, res: v.Resources }); });
+    }
+
+    // Fonts: text decoding (ToUnicode CMap, encodings, Differences) and glyph widths for layout.
+    const fontCache = new Map();
+    const fontFor = async ref => {
+      const font = get(ref);
+      if (!font || typeof font !== 'object') return null;
+      if (fontCache.has(font)) return fontCache.get(font);
+      const toUnicode = get(font.ToUnicode);
+      const cmap = toUnicode && toUnicode.stream ? parseCMap(await streamText(toUnicode)) : null;
+      const map = cmap && cmap.map.size ? cmap.map : null;
+      const composite = font.Subtype === '/Type0';
+      let table = WIN;
+      let codeLen = () => 1; // bytes per character code; a ToUnicode CMap's code space doesn't decide it
+      let ucs2 = false;
+      let legacy = null;
+      let widthOf;
+      if (composite) {
+        const enc = get(font.Encoding);
+        const name = typeof enc === 'string' ? enc : '';
+        const bytes = enc && enc.stream ? parseCMap(await streamText(enc)).bytes : 2;
+        codeLen = () => bytes;
+        ucs2 = /UCS2|UTF16/.test(name);
+        const charset = !map && LEGACY.find(([re]) => re.test(name));
+        if (charset) { legacy = new TextDecoder(charset[1]); codeLen = charset[2]; }
+        const desc = get((get(font.DescendantFonts) || [])[0]) || {};
+        const dw = typeof get(desc.DW) === 'number' ? get(desc.DW) : 1000;
+        const widths = new Map();
+        const w = get(desc.W);
+        for (let i = 0; Array.isArray(w) && i < w.length;) {
+          const first = get(w[i]);
+          const next = get(w[i + 1]);
+          if (Array.isArray(next)) { next.forEach((x, k) => widths.set(first + k, get(x))); i += 2; }
+          else { for (let c = first; c <= next && c - first < 65536; c++) widths.set(c, get(w[i + 2])); i += 3; }
+        }
+        // Legacy codes aren't CIDs, so only the usual half and full widths are known.
+        widthOf = (code, n) => (legacy ? (n > 1 ? dw : dw / 2) : widths.get(code) ?? dw);
+      } else {
+        const enc = get(font.Encoding);
+        const base = typeof enc === 'string' ? enc : enc && get(enc.BaseEncoding);
+        if (base === '/MacRomanEncoding') table = MAC;
+        const diffs = enc && typeof enc === 'object' ? get(enc.Differences) : null;
+        if (Array.isArray(diffs)) {
+          table = table.slice();
+          let code = 0;
+          for (const d of diffs) {
+            const v = get(d);
+            if (typeof v === 'number') code = v;
+            else if (typeof v === 'string') { const ch = glyphChar(v.slice(1)); if (ch !== undefined && code < 256) table[code] = ch; code++; }
+          }
+        }
+        const first = get(font.FirstChar) || 0;
+        const widths = get(font.Widths);
+        const missing = get((get(font.FontDescriptor) || {}).MissingWidth);
+        widthOf = code => {
+          const v = Array.isArray(widths) ? get(widths[code - first]) : undefined;
+          return typeof v === 'number' ? v : missing || 500;
+        };
+      }
+      const run = (str, size, tc, tw, th) => {
+        let text = '';
+        let adv = 0;
+        let gap = false;
+        for (let i = 0; i < str.length;) {
+          const n = codeLen(str.charCodeAt(i), str.charCodeAt(i + 1));
+          if (i + n > str.length) break;
+          let code = 0;
+          for (let k = 0; k < n; k++) code = code * 256 + str.charCodeAt(i + k);
+          const ch = legacy ? legacy.decode(Uint8Array.from(str.slice(i, i + n), c => c.charCodeAt(0)))
+            : map && map.has(code) ? map.get(code) : !composite ? table[code] || '' : ucs2 ? String.fromCharCode(code) : '';
+          i += n;
+          const space = n === 1 && code === 32; // word spacing applies to the single-byte code 32 only
+          const width = (widthOf(code, n) / 1000) * size;
+          const extra = tc + (space ? tw : 0);
+          adv += width + extra;
+          // Justified text may close up a space with negative word spacing, or open word gaps with character spacing.
+          if (space && width + extra < 0.1 * Math.abs(size)) continue;
+          if (gap && ch && !/^\s/.test(ch) && !/\s$/.test(text) && !(cjk.test(text.slice(-1)) && cjk.test(ch))) text += ' ';
+          text += ch;
+          gap = extra > 0.15 * Math.abs(size);
+        }
+        return { text, adv: adv * th };
+      };
+      fontCache.set(font, run);
+      return run;
+    };
+
+    const mul = (m, n) => [
+      m[0] * n[0] + m[1] * n[2], m[0] * n[1] + m[1] * n[3],
+      m[2] * n[0] + m[3] * n[2], m[2] * n[1] + m[3] * n[3],
+      m[4] * n[0] + m[5] * n[2] + n[4], m[4] * n[1] + m[5] * n[3] + n[5],
+    ];
+    const cjk = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}\u3000-\u303f\uff00-\uffef]/u;
+    // Interprets a content stream, tracking the text and graphics matrices so that spaces and line
+    // breaks come from real gaps between glyph runs (the approach pdftotext and pdf.js use).
+    const contentText = async (content, resources, depth, ctm0) => {
+      const res = get(resources) || {};
+      const fonts = get(res.Font) || {};
+      const xobjects = get(res.XObject) || {};
+      const lex = new Lexer(content);
+      const args = [];
+      const stack = [];
+      let ctm = ctm0;
+      let tm = [1, 0, 0, 1, 0, 0];
+      let tlm = tm;
+      let font = null;
+      let size = 0, tc = 0, tw = 0, th = 1, tl = 0;
+      let out = '';
+      let pending = '';
+      let last = null;
+      const marked = []; // open marked-content sequences; one with ActualText replaces the glyphs inside it
+      const num = i => (typeof args[i] === 'number' ? args[i] : 0);
+      const nums = n => args.slice(-n).map(x => (typeof x === 'number' ? x : 0));
+      const td = (tx, ty) => { tlm = mul([1, 0, 0, 1, tx, ty], tlm); tm = tlm; };
+      const show = str => {
+        if (!font || !str) return;
+        let { text, adv } = font(str, size, tc, tw, th);
+        const span = marked.find(Boolean);
+        if (span) { text = span.used ? '' : span.text; span.used = true; }
+        const m = mul(tm, ctm);
+        if (last && text) {
+          const fs = Math.abs(size) * (Math.hypot(m[2], m[3]) || 1);
+          const len = Math.hypot(m[0], m[1]) || 1;
+          const dx = m[4] - last.x;
+          const dy = m[5] - last.y;
+          const along = (dx * m[0] + dy * m[1]) / len;
+          const across = Math.abs(dy * m[0] - dx * m[1]) / len;
+          if (across > fs * 0.5) pending = '\n';
+          else if (along > fs * 0.15 || along < -fs) pending = pending || ' ';
+        }
+        if (text) {
+          if (pending === '\n') { if (out && !out.endsWith('\n')) out += '\n'; }
+          else if (pending === ' ' && out && !/\s$/.test(out) && !(cjk.test(out.slice(-1)) && cjk.test(text[0]))) out += ' ';
+          pending = '';
+          out += text;
+        }
+        tm = mul([1, 0, 0, 1, adv, 0], tm);
+        const end = mul(tm, ctm);
+        last = { x: end[4], y: end[5] };
+      };
+      for (;;) {
+        const v = lex.value();
+        if (v === undefined) break;
+        if (!v || typeof v !== 'object' || !('op' in v)) { args.push(v); continue; }
+        switch (v.op) {
+          case 'q': stack.push(ctm); break;
+          case 'Q': if (stack.length) ctm = stack.pop(); break;
+          case 'cm': ctm = mul(nums(6), ctm); break;
+          case 'BT': tm = tlm = [1, 0, 0, 1, 0, 0]; break;
+          case 'Tf': font = await fontFor(fonts[String(args[args.length - 2] || '').slice(1)]); size = num(args.length - 1); break;
+          case 'Tc': tc = num(0); break;
+          case 'Tw': tw = num(0); break;
+          case 'Tz': th = num(0) / 100; break;
+          case 'TL': tl = num(0); break;
+          case 'Td': td(num(0), num(1)); break;
+          case 'TD': tl = -num(1); td(num(0), num(1)); break;
+          case 'Tm': tm = tlm = nums(6); break;
+          case 'T*': td(0, -tl); pending = '\n'; break;
+          case 'Tj': show((args[0] || {}).s); break;
+          case "'": td(0, -tl); pending = '\n'; show((args[0] || {}).s); break;
+          case '"': tw = num(0); tc = num(1); td(0, -tl); pending = '\n'; show((args[2] || {}).s); break;
+          case 'TJ':
+            for (const part of Array.isArray(args[0]) ? args[0] : []) {
+              if (typeof part === 'number') tm = mul([1, 0, 0, 1, (-part / 1000) * size * th, 0], tm);
+              else if (part && part.s !== undefined) show(part.s);
+            }
+            break;
+          case 'BMC': marked.push(null); break;
+          case 'BDC': {
+            let props = args[args.length - 1];
+            props = typeof props === 'string' ? get((get(res.Properties) || {})[props.slice(1)]) : get(props);
+            const actual = props && typeof props === 'object' ? get(props.ActualText) : null;
+            marked.push(actual && actual.s !== undefined ? { text: textString(actual.s) } : null);
+            break;
+          }
+          case 'EMC': marked.pop(); break;
+          case 'ID': { // inline image data: skip to EI
+            const end = /\sEI(?=\s|$)/g;
+            end.lastIndex = lex.pos;
+            lex.pos = end.exec(content) ? end.lastIndex : content.length;
+            break;
+          }
+          case 'Do': {
+            const xo = get(xobjects[String(args[0] || '').slice(1)]);
+            if (xo && xo.Subtype === '/Form' && depth < 6) {
+              const matrix = get(xo.Matrix);
+              const inner = await contentText(await streamText(xo), xo.Resources || resources, depth + 1,
+                mul(Array.isArray(matrix) && matrix.length === 6 ? matrix.map(get) : [1, 0, 0, 1, 0, 0], ctm));
+              if (inner.trim()) {
+                out = out.trimEnd();
+                out += (out ? '\n' : '') + inner.trim();
+                pending = '\n';
+                last = null;
+              }
+            }
+            break;
+          }
+        }
+        args.length = 0;
+      }
+      return out;
+    };
+
+    const parts = [];
+    for (const [i, { page, res }] of pages.entries()) {
+      let contents = get(page.Contents);
+      contents = Array.isArray(contents) ? contents.map(get) : [contents];
+      let content = '';
+      for (const c of contents) content += (await streamText(c)) + '\n';
+      const text = (await contentText(content, res, 0, [1, 0, 0, 1, 0, 0])).trim();
+      if (text) parts.push(`[Page ${i + 1}]\n${text}`);
+    }
+    if (!parts.length) fail('pdfNoText', name);
+    // Fonts often share one glyph between a radical and the ideograph, and ToUnicode names the radical.
+    return parts.join('\n\n').replace(/[\u2e80-\u2fdf\uf900-\ufaff]/g, ch => RADICALS.get(ch) || ch.normalize('NFKC'));
+  }
+
+  // ----- Plain text -----
+  function decodeText(u8) {
+    if (u8[0] === 0xef && u8[1] === 0xbb && u8[2] === 0xbf) return utf8.decode(u8.subarray(3));
+    if (u8[0] === 0xff && u8[1] === 0xfe) return new TextDecoder('utf-16le').decode(u8.subarray(2));
+    if (u8[0] === 0xfe && u8[1] === 0xff) return new TextDecoder('utf-16be').decode(u8.subarray(2));
+    try {
+      return new TextDecoder('utf-8', { fatal: true }).decode(u8);
+    } catch (e) {
+      return new TextDecoder('gb18030').decode(u8); // common for Chinese text files
+    }
+  }
+
+  // Returns { kind, text } or throws an Error with a readable message.
+  async function extract(file) {
+    if (file.size > MAX_SIZE) fail('fileTooLarge', file.name);
+    const buf = await file.arrayBuffer();
+    const u8 = new Uint8Array(buf);
+    const head = toStr(u8.subarray(0, 8));
+    let kind = 'text';
+    let text;
+    try {
+      if (head.startsWith('%PDF')) {
+        kind = 'pdf';
+        text = await pdf(u8, file.name);
+      } else if (head.startsWith('PK')) {
+        const zip = unzip(buf);
+        if (zip && zip.has('word/document.xml')) { kind = 'docx'; text = await docx(zip); }
+        else if (zip && zip.has('xl/workbook.xml')) { kind = 'xlsx'; text = await xlsx(zip); }
+        else if (zip && zip.has('ppt/presentation.xml')) { kind = 'pptx'; text = await pptx(zip); }
+        else fail('fileUnsupported', file.name);
+      } else if (u8[0] === 0xd0 && u8[1] === 0xcf && u8[2] === 0x11 && u8[3] === 0xe0) { // legacy .doc/.xls/.ppt
+        fail('fileOldOffice', file.name);
+      } else {
+        const sample = u8.subarray(0, 8192);
+        const bom = (u8[0] === 0xff && u8[1] === 0xfe) || (u8[0] === 0xfe && u8[1] === 0xff);
+        if (!bom && sample.includes(0)) fail('fileUnsupported', file.name);
+        text = decodeText(u8);
+      }
+    } catch (e) {
+      if (e.message && e.message.includes(file.name)) throw e;
+      fail('fileError', file.name, e.message || e);
+    }
+    text = String(text).replace(/\r\n?/g, '\n').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+    if (!text) fail('fileEmpty', file.name);
+    return { kind, text };
+  }
+
+  return { extract };
+})();
+
 // ---------- UI state ----------
 const ui = {
   list: $('#chat-list'), search: $('#search'), model: $('#model-select'),
   scroller: $('#scroller'), msgs: $('#msgs'), input: $('#input'), send: $('#send'),
-  thumbs: $('#thumbs'), composer: $('#composer'), toBottom: $('#to-bottom'), fileInput: $('#file-input'),
-  dlgChat: $('#dlg-chat'), dlgSettings: $('#dlg-settings'), dlgProvider: $('#dlg-provider'), dlgImg: $('#dlg-img'),
+  thumbs: $('#thumbs'), composer: $('#composer'), toBottom: $('#to-bottom'), fileInput: $('#file-input'), docInput: $('#doc-input'),
+  effort: $('#effort-select'), effortBox: $('#effort'), effortValue: $('#effort-value'),
+  dlgChat: $('#dlg-chat'), dlgSettings: $('#dlg-settings'), dlgProvider: $('#dlg-provider'), dlgImg: $('#dlg-img'), dlgFile: $('#dlg-file'),
 };
 const state = {
   chats: [],          // saved chats, most recent first
   current: null,      // the open chat (may be an unsaved draft)
   attachments: [],    // images waiting in the composer (data URLs)
+  files: [],          // documents waiting in the composer: { id, name, size, kind, text, reading }
   running: new Map(), // chat id -> { ctrl, msg } for in-flight requests
   editing: null,      // id of the message being edited
   stick: true,        // keep the view pinned to the bottom while streaming
@@ -1325,9 +2125,6 @@ function resolveModel(chat) {
   const o = chat.options;
   const provider = settings.providers.find(p => p.id === o.providerId);
   return provider && o.model ? { provider, model: o.model } : null;
-}
-function rememberChat(chat) {
-  try { localStorage.setItem('justchat-last', chat.id); } catch (e) { /* ignore */ }
 }
 
 const darkQuery = matchMedia('(prefers-color-scheme: dark)');
@@ -1391,6 +2188,7 @@ function renderModelSelect() {
   }
   sel.append(new Option(t('manageProviders'), '__manage'));
   fitModelSelect();
+  renderEffort();
 }
 
 // A <select> is as wide as its longest option; size it to the selected one instead.
@@ -1433,9 +2231,10 @@ function messageEl(chat, msg) {
     return el;
   }
   if (msg.role === 'user') {
-    if (msg.images && msg.images.length) {
-      el.innerHTML = `<div class="images">${msg.images.map(src => `<img src="${esc(src)}" alt="">`).join('')}</div>`;
-    }
+    let html = '';
+    if (msg.images && msg.images.length) html += `<div class="images">${msg.images.map(src => `<img src="${esc(src)}" alt="">`).join('')}</div>`;
+    if (msg.files && msg.files.length) html += `<div class="files">${msg.files.map((f, i) => fileChip(f, `button type="button" class="file-chip" data-file="${i}"`, '</button>')).join('')}</div>`;
+    el.innerHTML = html;
     if (msg.content) {
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
@@ -1537,14 +2336,52 @@ function updateComposer() {
   ui.send.innerHTML = icon(running ? 'stop' : 'up');
   ui.send.title = t(running ? 'stop' : 'send');
   ui.send.setAttribute('aria-label', ui.send.title);
-  ui.send.disabled = !running && !ui.input.value.trim() && !state.attachments.length;
+  const reading = state.files.some(f => f.reading);
+  ui.send.disabled = !running && (reading || (!ui.input.value.trim() && !state.attachments.length && !state.files.length));
 }
 
+const FILE_KINDS = { pdf: 'PDF', docx: 'Word', xlsx: 'Excel', pptx: 'PowerPoint' };
+function fileMeta(f) {
+  if (f.reading) return t('reading');
+  const n = f.text.length;
+  const count = n < 1000 ? String(n) : (n / 1000).toFixed(n < 100000 ? 1 : 0).replace(/\.0$/, '') + 'k';
+  const kind = FILE_KINDS[f.kind] || (/\.([a-z0-9]{1,8})$/i.exec(f.name) || [, 'txt'])[1].toUpperCase();
+  return `${kind} · ${t('fileChars', count)}`;
+}
+const fileChip = (f, attrs, extra = '') =>
+  `<${attrs}>${icon('file')}<div><span class="fname">${esc(f.name)}</span><span class="fmeta">${esc(fileMeta(f))}</span></div>${extra}`;
+
 function renderThumbs() {
-  ui.thumbs.hidden = !state.attachments.length;
+  const remove = esc(t('remove'));
+  ui.thumbs.hidden = !state.attachments.length && !state.files.length;
   ui.thumbs.innerHTML = state.attachments.map((src, i) =>
-    `<div class="thumb"><img src="${esc(src)}" alt=""><button data-i="${i}" title="${esc(t('remove'))}" aria-label="${esc(t('remove'))}">${icon('x')}</button></div>`
+    `<div class="thumb"><img src="${esc(src)}" alt=""><button data-i="${i}" title="${remove}" aria-label="${remove}">${icon('x')}</button></div>`
+  ).join('') + state.files.map(f =>
+    fileChip(f, `div class="thumb file-chip${f.reading ? ' reading' : ''}" data-file="${esc(f.id)}"`,
+      `<button data-rmfile="${esc(f.id)}" title="${remove}" aria-label="${remove}">${icon('x')}</button></div>`)
   ).join('');
+}
+
+function showFileText(f) {
+  $('#file-title').textContent = f.name;
+  $('#file-text').textContent = f.text;
+  ui.dlgFile.showModal();
+  $('#file-text').parentElement.scrollTop = 0;
+}
+
+// Reasoning effort, next to the message box. Levels depend on the API format of the chat's model.
+const EFFORTS = { openai: ['none', 'minimal', 'low', 'medium', 'high', 'xhigh'], anthropic: ['low', 'medium', 'high', 'xhigh', 'max'] };
+const effortLabel = v => t(v ? 'effort' + v[0].toUpperCase() + v.slice(1) : 'effortDefault');
+function renderEffort() {
+  const chat = state.current;
+  const target = resolveModel(chat);
+  const levels = EFFORTS[target ? target.provider.type : 'openai'];
+  if (chat.options.reasoning && !levels.includes(chat.options.reasoning)) chat.options.reasoning = '';
+  const value = chat.options.reasoning || '';
+  ui.effort.innerHTML = ['', ...levels].map(v => `<option value="${v}">${esc(effortLabel(v))}</option>`).join('');
+  ui.effort.value = value;
+  ui.effortValue.textContent = effortLabel(value);
+  ui.effortBox.classList.toggle('on', !!value);
 }
 
 function autosize(el = ui.input) {
@@ -1566,7 +2403,6 @@ function scrollToBottom() {
 function openChat(chat) {
   state.current = chat;
   state.editing = null;
-  if (!chat.draft) rememberChat(chat);
   setTitle(chat);
   renderAll();
   scrollToBottom();
@@ -1607,16 +2443,17 @@ function renameChat(chat) {
 function send() {
   const chat = state.current;
   const text = ui.input.value.trim();
-  if (state.running.has(chat.id) || (!text && !state.attachments.length)) return;
+  if (state.running.has(chat.id) || (!text && !state.attachments.length && !state.files.length)) return;
+  if (state.files.some(f => f.reading)) { toast(t('fileStillReading')); return; }
   if (!resolveModel(chat)) { toast(t('noModel')); return; }
   const msg = { id: uid(), role: 'user', content: text, time: Date.now() };
   if (state.attachments.length) msg.images = state.attachments.splice(0);
+  if (state.files.length) msg.files = state.files.splice(0).map(({ name, size, kind, text }) => ({ name, size, kind, text }));
   chat.messages.push(msg);
-  if (!chat.title) chat.title = text.replace(/\s+/g, ' ').slice(0, 60);
+  if (!chat.title) chat.title = (text || (msg.files ? msg.files[0].name : '')).replace(/\s+/g, ' ').slice(0, 60);
   if (chat.draft) {
     delete chat.draft;
     state.chats.unshift(chat);
-    rememberChat(chat);
   }
   // Ask once to keep data from being evicted (Firefox shows a prompt, so wait until the app is in use).
   if (!state.persistAsked && navigator.storage && navigator.storage.persist) {
@@ -1692,6 +2529,26 @@ function regenerate(chat, msg) {
   generate(chat);
 }
 
+// Images become image attachments; anything else is read as a document (text extracted in the browser).
+function addFiles(list) {
+  const files = [...list];
+  const images = files.filter(f => f.type.startsWith('image/'));
+  if (images.length) addImages(images);
+  for (const file of files.filter(f => !f.type.startsWith('image/'))) {
+    const entry = { id: uid(), name: file.name, size: file.size, kind: '', text: '', reading: true };
+    state.files.push(entry);
+    documents.extract(file)
+      .then(({ kind, text }) => Object.assign(entry, { kind, text, reading: false }))
+      .catch(e => {
+        state.files = state.files.filter(f => f !== entry);
+        toast(e.message || String(e), 6000);
+      })
+      .finally(() => { renderThumbs(); updateComposer(); });
+  }
+  renderThumbs();
+  updateComposer();
+}
+
 async function addImages(files) {
   for (const file of files) {
     try { state.attachments.push(await readImage(file)); } catch (e) { toast(t('imageError')); }
@@ -1718,10 +2575,6 @@ function openChatSettings() {
   $('#cs-temperature').placeholder = $('#cs-topP').placeholder = t('default');
   $('#cs-maxTokens').placeholder = type === 'anthropic' ? String(ANTHROPIC_DEFAULT_MAX_TOKENS) : t('default');
   $('#cs-context').placeholder = t('all');
-  const efforts = type === 'anthropic' ? ['low', 'medium', 'high', 'xhigh', 'max'] : ['none', 'minimal', 'low', 'medium', 'high', 'xhigh'];
-  if (o.reasoning && !efforts.includes(o.reasoning)) efforts.push(o.reasoning);
-  $('#cs-reasoning').innerHTML = `<option value="">${esc(t('default'))}</option>` + efforts.map(v => `<option>${esc(v)}</option>`).join('');
-  $('#cs-reasoning').value = o.reasoning || '';
   $('#cs-stream').checked = o.stream !== false;
   ui.dlgChat.showModal();
 }
@@ -1733,7 +2586,6 @@ function readChatSettings() {
     topP: toNum($('#cs-topP').value),
     maxTokens: toNum($('#cs-maxTokens').value, true),
     context: toNum($('#cs-context').value, true),
-    reasoning: $('#cs-reasoning').value,
     stream: $('#cs-stream').checked,
   };
 }
@@ -1823,7 +2675,6 @@ $('#btn-clear').onclick = async () => {
   state.chats = [];
   await store.clear().catch(e => toast(t('storageError', e.message || e)));
   try {
-    localStorage.removeItem('justchat-last');
     localStorage.removeItem('justchat-theme');
   } catch (e) { /* ignore */ }
   await loadAll();
@@ -2025,7 +2876,9 @@ ui.model.addEventListener('change', () => {
   const chat = state.current;
   fitModelSelect();
   Object.assign(chat.options, { providerId, model });
-  Object.assign(settings.defaults, { providerId, model }); // the last used model becomes the default
+  renderEffort(); // levels differ between API formats
+  // The last used model and reasoning effort become the defaults for new chats.
+  Object.assign(settings.defaults, { providerId, model, reasoning: chat.options.reasoning });
   saveSettings();
   saveChat(chat);
   if (!chat.messages.length) renderMessages();
@@ -2043,6 +2896,13 @@ ui.msgs.addEventListener('click', async e => {
   }
   const img = e.target.closest('.images img, .md img');
   if (img) { showImage(img.src); return; }
+  const chip = e.target.closest('.file-chip[data-file]');
+  if (chip) {
+    const m = findMsg(chat, chip.closest('.msg').dataset.id);
+    const f = m && m.files && m.files[Number(chip.dataset.file)];
+    if (f) showFileText(f);
+    return;
+  }
   const btn = e.target.closest('[data-act]');
   if (!btn) {
     // Touch devices: tapping a message reveals its actions.
@@ -2136,22 +2996,43 @@ ui.input.addEventListener('keydown', e => {
 });
 ui.input.addEventListener('paste', e => {
   const cd = e.clipboardData;
-  const files = cd ? [...cd.files].filter(f => f.type.startsWith('image/')) : [];
+  const files = cd ? [...cd.files] : [];
   if (files.length && !cd.getData('text/plain')) {
     e.preventDefault();
-    addImages(files);
+    addFiles(files);
   }
 });
 ui.send.onclick = () => (state.running.has(state.current.id) ? stopChat(state.current) : send());
 $('#btn-attach').onclick = () => ui.fileInput.click();
+$('#btn-file').onclick = () => ui.docInput.click();
+ui.docInput.onchange = () => {
+  const files = [...ui.docInput.files];
+  ui.docInput.value = '';
+  addFiles(files);
+};
+ui.effort.addEventListener('change', () => {
+  const chat = state.current;
+  chat.options.reasoning = ui.effort.value;
+  settings.defaults.reasoning = ui.effort.value;
+  saveSettings();
+  saveChat(chat);
+  renderEffort();
+});
 ui.fileInput.onchange = () => {
   addImages([...ui.fileInput.files]);
   ui.fileInput.value = '';
 };
 ui.thumbs.addEventListener('click', e => {
-  const btn = e.target.closest('button[data-i]');
-  if (!btn) return;
-  state.attachments.splice(Number(btn.dataset.i), 1);
+  const img = e.target.closest('button[data-i]');
+  const rmFile = e.target.closest('button[data-rmfile]');
+  const chip = e.target.closest('.file-chip');
+  if (img) state.attachments.splice(Number(img.dataset.i), 1);
+  else if (rmFile) state.files = state.files.filter(f => f.id !== rmFile.dataset.rmfile);
+  else if (chip) {
+    const f = state.files.find(x => x.id === chip.dataset.file);
+    if (f && !f.reading) showFileText(f);
+    return;
+  } else return;
   renderThumbs();
   updateComposer();
 });
@@ -2168,7 +3049,7 @@ mainEl.addEventListener('drop', e => {
   ui.composer.classList.remove('drag');
   if (!hasFiles(e)) return;
   e.preventDefault();
-  addImages([...e.dataTransfer.files].filter(f => f.type.startsWith('image/')));
+  addFiles(e.dataTransfer.files);
 });
 // Elsewhere (sidebar, dialogs) a dropped file must not make the browser navigate away from the app.
 addEventListener('dragover', e => {
@@ -2185,9 +3066,7 @@ async function loadAll() {
   sortChats();
   applyTheme();
   applyLang();
-  let last = null;
-  try { last = localStorage.getItem('justchat-last'); } catch (e) { /* ignore */ }
-  openChat(state.chats.find(c => c.id === last) || makeChat());
+  openChat(makeChat()); // every visit starts with a new chat
 }
 
 // iOS ignores SVG icons for "Add to Home Screen", so draw a PNG once at startup.

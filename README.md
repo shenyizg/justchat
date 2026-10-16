@@ -24,15 +24,19 @@ Open it in a browser, add your API, and start chatting.<br>No build step, no dep
 <table>
   <tr>
     <td width="50%" valign="top"><b>🔌 Bring your own models</b><br>Any OpenAI-compatible API (OpenAI, DeepSeek, OpenRouter, Ollama, vLLM, LM Studio, …) and the Anthropic API. Add as many providers as you like and switch models per chat.</td>
-    <td width="50%" valign="top"><b>💬 Made for conversation</b><br>Streaming replies, visible reasoning, Markdown with tables and highlighted code, image input, and editing or regenerating any message.</td>
+    <td width="50%" valign="top"><b>💬 Made for conversation</b><br>Streaming replies, Markdown with tables and highlighted code, and editing or regenerating any message.</td>
   </tr>
   <tr>
-    <td width="50%" valign="top"><b>🎛️ Your settings, per chat</b><br>System prompt, temperature, top P, max tokens, context length, reasoning effort and streaming, for each chat or as defaults.</td>
+    <td width="50%" valign="top"><b>📎 Images and documents</b><br>Attach images, PDF, Word, Excel, PowerPoint and text files. Documents are read in your browser and sent as text, so they work with any model.</td>
+    <td width="50%" valign="top"><b>💡 Reasoning</b><br>Set the reasoning effort right next to the message box, and expand the model's thinking as it streams.</td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top"><b>🎛️ Your settings, per chat</b><br>System prompt, temperature, top P, max tokens, context length and streaming, for each chat or as defaults.</td>
     <td width="50%" valign="top"><b>🔒 Private</b><br>Everything is stored in your browser. No analytics, no account, no third-party server. Back up with JSON export and import.</td>
   </tr>
   <tr>
     <td width="50%" valign="top"><b>📱 Everywhere</b><br>Desktop and phone layouts, light and dark themes, English and Chinese, and Add to Home Screen.</td>
-    <td width="50%" valign="top"><b>🪶 Tiny</b><br>One HTML file of about 110 KB. Open it from disk or host it anywhere.</td>
+    <td width="50%" valign="top"><b>🪶 Tiny</b><br>One HTML file of about 150 KB. Open it from disk or host it anywhere.</td>
   </tr>
 </table>
 
@@ -40,7 +44,7 @@ Open it in a browser, add your API, and start chatting.<br>No build step, no dep
 
 1. **Get the file.** Download [`index.html`](index.html) and open it in your browser, or put it on any static host such as GitHub Pages or Nginx.
 2. **Add a provider.** Click **Add provider**, enter the base URL and API key, then press **Fetch list** to load the models.
-3. **Start chatting.** Pick a model in the top bar and send a message.
+3. **Start chatting.** Pick a model in the top bar and send a message. Each visit opens a new chat, and earlier chats are in the sidebar.
 
 > [!NOTE]
 > Each browser keeps its own chats and settings, so the same page can be used on several devices without them mixing. To back up or move them, use **Settings → Data → Export**.
@@ -61,7 +65,35 @@ Open it in a browser, add your API, and start chatting.<br>No build step, no dep
 
 JustChat adds the endpoint path for you (`/chat/completions`, or `/v1/messages` for Anthropic), and the provider dialog shows the final address. A full endpoint URL works too.
 
+## Images and documents
+
+Attach files with the buttons under the message box, by dropping them onto the chat, or by pasting.
+
+- **Images** go to the model as image input, so they need a vision model. Large images are scaled down to 2048 px.
+- **Documents** are read in your browser and their text is sent with your message, so they work with any model. Click an attached file to see the text the model receives.
+
+| Type | What is read |
+| --- | --- |
+| PDF | The text layer, page by page |
+| Word (`.docx`) | Paragraphs, headings, lists and tables |
+| Excel (`.xlsx`) | Every sheet as rows of cells, with dates and percentages written out |
+| PowerPoint (`.pptx`) | The text of each slide, in order |
+| Text | Markdown, CSV, JSON, HTML, source code and other plain text (UTF-8, UTF-16 or GBK) |
+
+Scanned PDFs without a text layer and password-protected PDFs can't be read, and old `.doc`, `.xls` and `.ppt` files need to be saved in the newer format first. Files can be up to 30 MB each. Long documents take up much of the model's context window.
+
 ## Configuration
+
+### Reasoning effort
+
+The 💡 button next to the message box sets how much the model thinks before it answers. The levels depend on the API format of the chat's model:
+
+| API format | Levels | Sent as |
+| --- | --- | --- |
+| OpenAI compatible | Off, Minimal, Low, Medium, High, Extra high | `reasoning_effort` |
+| Anthropic | Low, Medium, High, Extra high, Max | Adaptive thinking with an effort level |
+
+**Default** sends nothing, so the model uses its own setting. The level you pick also becomes the default for new chats. If a model rejects the parameter, set it back to Default.
 
 ### Chat settings
 
@@ -73,7 +105,6 @@ Open them with the sliders icon in the top bar. Blank fields aren't sent, so the
 | Temperature, Top P | Sampling parameters. Some newer models reject them; leave them blank for those. |
 | Max tokens | Longest reply allowed. Blank uses the provider's default; for Anthropic, which requires a value, it's 8192. |
 | Context messages | How many recent messages are sent with each request. Blank sends the whole chat. |
-| Reasoning effort | `reasoning_effort` for OpenAI-compatible APIs, adaptive thinking with an effort level for Anthropic. |
 | Stream output | Show the reply as it's generated. |
 
 ### Provider options
@@ -103,12 +134,13 @@ While editing a message, <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> sav
 
 - Chats and settings, API keys included, are stored only in your browser (IndexedDB). Host JustChat on its own domain or subdomain, because other pages on the same origin could read them.
 - JustChat only talks to the APIs you add. Images in model replies are loaded from their URLs.
+- Attached files are read in your browser and sent to the API as part of your message, documents as plain text. They're saved with the chat, so exports include them too.
 - Exports contain everything, API keys included.
 - Browsers may clear data of sites you haven't used for a while, Safari especially. Export now and then; on iOS, adding the page to the Home Screen helps.
 
 ## Development
 
-Everything lives in `index.html`: the styles, the markup and one script organized in sections (utilities, i18n, storage, Markdown, API, UI). There is nothing to install or build. Edit the file and reload.
+Everything lives in `index.html`: the styles, the markup and one script organized in sections (utilities, i18n, storage, Markdown, API, documents, UI). There is nothing to install or build. Edit the file and reload.
 
 To add a UI language, add an entry to the `I18N` object and an option to the language select.
 
