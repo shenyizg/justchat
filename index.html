@@ -116,14 +116,23 @@ header { flex: none; display: flex; align-items: center; gap: 2px; height: 52px;
 .edit-box textarea { width: 100%; min-height: 80px; max-height: 50vh; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); resize: vertical; outline: none; line-height: 1.55; }
 .edit-box textarea:focus { border-color: var(--fg-3); }
 .edit-box .row { justify-content: flex-end; margin-top: 8px; }
-details.think { margin-bottom: 10px; font-size: 14px; color: var(--fg-2); }
-details.think > summary { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; list-style: none; user-select: none; -webkit-user-select: none; color: var(--fg-3); }
-details.think > summary::-webkit-details-marker { display: none; }
-details.think > summary svg.i { width: 15px; height: 15px; transform: rotate(-90deg); transition: transform .15s; }
-details.think[open] > summary svg.i { transform: none; }
-details.think.live > summary span { animation: pulse 1.6s ease-in-out infinite; }
+details.think, details.tools { margin-bottom: 10px; font-size: 14px; color: var(--fg-2); }
+details.think > summary, details.tools > summary { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; list-style: none; user-select: none; -webkit-user-select: none; color: var(--fg-3); }
+details.think > summary::-webkit-details-marker, details.tools > summary::-webkit-details-marker { display: none; }
+details.think > summary svg.i, details.tools > summary svg.i { width: 15px; height: 15px; transform: rotate(-90deg); transition: transform .15s; }
+details.think[open] > summary svg.i, details.tools[open] > summary svg.i { transform: none; }
+details.think.live > summary span, details.tools.live > summary span { animation: pulse 1.6s ease-in-out infinite; }
 @keyframes pulse { 50% { opacity: .4; } }
 .think-body { margin-top: 6px; padding: 0 0 0 12px; border-left: 2px solid var(--line); }
+.steps { margin: 6px 0 0; padding: 0 0 0 12px; border-left: 2px solid var(--line); list-style: none; }
+.steps > li { display: flex; gap: 8px; margin: 4px 0; }
+.steps > li > svg.i { width: 15px; height: 15px; margin-top: 4px; color: var(--fg-3); }
+.steps > li > div { min-width: 0; overflow-wrap: anywhere; }
+.steps ul { margin: 2px 0 6px; padding-left: 18px; }
+.steps a { color: var(--accent); text-decoration: none; }
+.steps a:hover { text-decoration: underline; }
+.steps .host { color: var(--fg-3); font-size: 12px; }
+.steps .step-err { color: var(--danger); font-size: 13px; }
 .empty { min-height: 55vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; color: var(--fg-2); }
 .empty h2 { margin: 0; color: var(--fg); font-size: 24px; font-weight: 600; }
 .empty p { margin: 0 0 12px; }
@@ -186,6 +195,10 @@ footer { position: relative; flex: none; padding: 0 16px calc(12px + env(safe-ar
 .effort .chev { width: 14px; height: 14px; color: var(--fg-3); }
 .effort select { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; opacity: 0; font-size: 16px; cursor: pointer; }
 .effort:has(select:focus-visible) { outline: 2px solid var(--accent); }
+.pill { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 10px 0 8px; border-radius: 16px; color: var(--fg-2); font-size: 13px; white-space: nowrap; }
+.pill:hover { background: var(--hover); color: var(--fg); }
+.pill.on { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.pill svg.i { width: 16px; height: 16px; }
 #send { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex: none; border-radius: 50%; background: var(--fg); color: var(--bg); }
 #send:disabled { opacity: .25; cursor: default; }
 
@@ -279,6 +292,8 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></symbol>
   <symbol id="i-clip" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></symbol>
   <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
   <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6M10 22h4"/></symbol>
@@ -322,6 +337,7 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
             <svg class="i chev"><use href="#i-down"/></svg>
             <select id="effort-select" data-i18n-title="reasoning"></select>
           </div>
+          <button class="pill" id="web-toggle" type="button" aria-pressed="false" data-i18n-title="webTitle"><svg class="i"><use href="#i-globe"/></svg><span data-i18n="webShort"></span></button>
           <span class="spacer"></span>
           <button id="send" data-i18n-title="send"><svg class="i"><use href="#i-up"/></svg></button>
         </div>
@@ -370,6 +386,15 @@ details.adv > summary { margin-bottom: 12px; font-size: 13px; color: var(--fg-2)
         <label class="field"><span data-i18n="sendKey"></span>
           <select id="set-send"><option value="enter">Enter</option><option value="mod-enter">Ctrl / ⌘ + Enter</option></select></label>
       </div>
+    </section>
+    <section>
+      <h4 data-i18n="webAccess"></h4>
+      <div class="grid2">
+        <label class="field"><span data-i18n="searchService"></span>
+          <select id="set-web"><option value="" data-i18n="searchNone"></option><option value="tavily">Tavily</option><option value="jina">Jina</option><option value="serper">Serper (Google)</option><option value="bocha" data-i18n="bocha"></option><option value="zhipu" data-i18n="zhipu"></option></select></label>
+        <label class="field" id="web-key-field"><span data-i18n="apiKey"></span><input id="set-web-key" class="secret" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore data-form-type="other"></label>
+      </div>
+      <p class="hint" id="web-hint"></p>
     </section>
     <section>
       <h4 data-i18n="data"></h4>
@@ -525,6 +550,15 @@ const I18N = {
     imageError: 'Could not read the image', version: 'JustChat {0} · Data stays in this browser',
     attachFile: 'Attach files', reasoningShort: 'Reasoning: ', effortDefault: 'Default', effortNone: 'Off', effortMinimal: 'Minimal',
     effortLow: 'Low', effortMedium: 'Medium', effortHigh: 'High', effortXhigh: 'Extra high', effortMax: 'Max',
+    webShort: 'Web', webTitle: 'Let the model search the web and read pages',
+    webAccess: 'Web access', searchService: 'Search service', searchNone: 'None (read pages only)', bocha: 'Bocha (博查)', zhipu: 'Zhipu (智谱)',
+    webHintNone: 'Without a search service the model can still read pages, through Jina Reader (free, with a rate limit).',
+    webHintTavily: 'Get a key at tavily.com. Pages are read with Tavily as well.',
+    webHintJina: 'Get a key at jina.ai. Pages are read with Jina Reader as well.',
+    webHintOther: 'Get a key at {0}. Pages are read with Jina Reader (free, with a rate limit).',
+    webNoSearch: 'No search service is set up, so the model can only read pages. Choose one in Settings → Web access.',
+    webNoSearchService: 'No search service is set up', webBadArgs: 'Invalid arguments', webBadUrl: 'Not an http or https URL', webBadResponse: 'Unexpected response', webUnreachable: 'Could not reach {0}',
+    searchingFor: 'Searching: {0}', readingUrl: 'Reading: {0}', searchOne: '1 search', searchN: '{0} searches', pageOne: '1 page read', pageN: '{0} pages read', resultsN: '{0} results',
     reading: 'Reading…', fileChars: '{0} chars', fileStillReading: 'Wait until the files have been read',
     fileTooLarge: '{0} is larger than 30 MB', fileUnsupported: '{0}: this type of file can\'t be read',
     fileOldOffice: '{0}: old Office format. Save it as .docx, .xlsx or .pptx first.',
@@ -569,6 +603,15 @@ const I18N = {
     imageError: '无法读取图片', version: 'JustChat {0} · 数据仅保存在本浏览器',
     attachFile: '添加文件', reasoningShort: '推理：', effortDefault: '默认', effortNone: '关闭', effortMinimal: '最少',
     effortLow: '低', effortMedium: '中', effortHigh: '高', effortXhigh: '超高', effortMax: '最高',
+    webShort: '联网', webTitle: '让模型搜索网页、读取网页内容',
+    webAccess: '联网', searchService: '搜索服务', searchNone: '不使用（只读取网页）', bocha: '博查', zhipu: '智谱',
+    webHintNone: '不设置搜索服务时，模型仍然可以读取网页，通过 Jina Reader 读取（免费，有频率限制）。',
+    webHintTavily: '在 tavily.com 获取 Key。网页也通过 Tavily 读取。',
+    webHintJina: '在 jina.ai 获取 Key。网页也通过 Jina Reader 读取。',
+    webHintOther: '在 {0} 获取 Key。网页通过 Jina Reader 读取（免费，有频率限制）。',
+    webNoSearch: '还没有设置搜索服务，模型只能读取网页。可以在 设置 → 联网 中选择搜索服务。',
+    webNoSearchService: '没有设置搜索服务', webBadArgs: '参数无效', webBadUrl: '不是 http 或 https 网址', webBadResponse: '返回的内容无法识别', webUnreachable: '无法连接 {0}',
+    searchingFor: '正在搜索：{0}', readingUrl: '正在读取：{0}', searchOne: '搜索 1 次', searchN: '搜索 {0} 次', pageOne: '读取 1 个网页', pageN: '读取 {0} 个网页', resultsN: '{0} 条结果',
     reading: '读取中…', fileChars: '{0} 字', fileStillReading: '文件还在读取中',
     fileTooLarge: '{0} 超过 30 MB', fileUnsupported: '{0}：不支持这种文件类型',
     fileOldOffice: '{0}：旧版 Office 格式，请先另存为 .docx、.xlsx 或 .pptx',
@@ -674,18 +717,26 @@ const store = (() => {
 const DEFAULT_OPTIONS = {
   providerId: '', model: '', system: '',
   temperature: null, topP: null, maxTokens: null, context: null,
-  reasoning: '', stream: true,
+  reasoning: '', stream: true, web: false,
 };
+const WEB_SERVICES = ['tavily', 'jina', 'serper', 'bocha', 'zhipu'];
 let settings = normalizeSettings(null);
 
 function normalizeSettings(s) {
   s = s && typeof s === 'object' ? s : {};
+  const web = s.web && typeof s.web === 'object' ? s.web : {};
+  const keys = web.keys && typeof web.keys === 'object' ? web.keys : {};
   return {
     providers: Array.isArray(s.providers) ? s.providers.filter(p => p && typeof p === 'object').map(normalizeProvider) : [],
     defaults: { ...DEFAULT_OPTIONS, ...s.defaults },
     theme: ['light', 'dark'].includes(s.theme) ? s.theme : 'system',
     lang: ['en', 'zh'].includes(s.lang) ? s.lang : 'auto',
     sendKey: s.sendKey === 'mod-enter' ? 'mod-enter' : 'enter',
+    // Search service for web access, with a key per service so switching keeps them.
+    web: {
+      provider: WEB_SERVICES.includes(web.provider) ? web.provider : '',
+      keys: Object.fromEntries(WEB_SERVICES.map(k => [k, String(keys[k] || '')])),
+    },
   };
 }
 
@@ -1144,10 +1195,11 @@ function contextMessages(chat) {
   return merged;
 }
 
-function buildRequest(p, model, o, history) {
+function buildRequest(p, model, o, history, turn = {}) {
   const url = apiURL(p, 'chat');
   const body = { model };
-  const system = (o.system || '').trim() ? o.system : '';
+  const system = [o.system, turn.system].filter(x => x && x.trim()).join('\n\n');
+  const tools = turn.tools || [];
   if (p.type === 'anthropic') {
     body.max_tokens = o.maxTokens || ANTHROPIC_DEFAULT_MAX_TOKENS;
     if (system) body.system = system;
@@ -1156,10 +1208,14 @@ function buildRequest(p, model, o, history) {
       content: m.images
         ? [...m.images.map(anthropicImage), ...(m.content ? [{ type: 'text', text: m.content }] : [])]
         : m.content,
-    }));
+    })).concat(turn.extra || []);
     if (o.reasoning) {
       body.thinking = { type: 'adaptive', display: 'summarized' };
       body.output_config = { effort: o.reasoning };
+    }
+    if (tools.length) {
+      body.tools = tools.map(x => ({ name: x.name, description: x.description, input_schema: x.parameters }));
+      if (turn.final) body.tool_choice = { type: 'none' };
     }
   } else {
     body.messages = system ? [{ role: 'system', content: system }] : [];
@@ -1171,9 +1227,14 @@ function buildRequest(p, model, o, history) {
           : m.content,
       });
     }
+    body.messages.push(...(turn.extra || []));
     // OpenAI's own API only accepts max_completion_tokens on newer models; most compatible servers use max_tokens.
     if (o.maxTokens) body[url.startsWith('https://api.openai.com/') ? 'max_completion_tokens' : 'max_tokens'] = o.maxTokens;
     if (o.reasoning) body.reasoning_effort = o.reasoning;
+    if (tools.length) {
+      body.tools = tools.map(x => ({ type: 'function', function: x }));
+      if (turn.final) body.tool_choice = 'none';
+    }
   }
   if (o.temperature != null) body.temperature = o.temperature;
   if (o.topP != null) body.top_p = o.topP;
@@ -1248,45 +1309,81 @@ async function* sse(res) {
   }
 }
 
-function applyOpenAI(msg, d) {
+// Text and reasoning from successive tool rounds are joined with a blank line.
+function addText(msg, step, text) {
+  if (!text) return;
+  if (step.sepText) { msg.content += '\n\n'; step.sepText = false; }
+  msg.content += text;
+  step.text += text;
+}
+function addReasoning(msg, step, text) {
+  if (!text) return;
+  if (step.sepThought && msg.reasoning) msg.reasoning += '\n\n';
+  step.sepThought = false;
+  msg.reasoning = (msg.reasoning || '') + text;
+}
+function addUsage(msg, u) {
+  if (!u) return;
+  const prev = msg.usage || { input: 0, output: 0 };
+  msg.usage = { input: prev.input + (u.input || 0), output: prev.output + (u.output || 0) };
+}
+
+function applyOpenAI(msg, d, step) {
   if (d.error) throw new Error(errText(d.error));
   const c = d.choices && d.choices[0];
   if (c) {
     const x = c.delta || c.message || {};
     const r = x.reasoning_content || x.reasoning; // DeepSeek / vLLM / OpenRouter style reasoning
-    if (typeof r === 'string') msg.reasoning = (msg.reasoning || '') + r;
-    if (typeof x.content === 'string') msg.content += x.content;
-    else if (Array.isArray(x.content)) for (const part of x.content) if (part && typeof part.text === 'string') msg.content += part.text;
+    if (typeof r === 'string') addReasoning(msg, step, r);
+    if (typeof x.content === 'string') addText(msg, step, x.content);
+    else if (Array.isArray(x.content)) for (const part of x.content) if (part && typeof part.text === 'string') addText(msg, step, part.text);
+    // Tool calls stream in pieces: the id and name first, then the arguments in fragments.
+    (Array.isArray(x.tool_calls) ? x.tool_calls : []).forEach((tc, j) => {
+      const i = tc.index ?? j;
+      const call = step.calls[i] || (step.calls[i] = { id: '', name: '', args: '' });
+      const f = tc.function || {};
+      if (tc.id) call.id = tc.id;
+      if (f.name) call.name = f.name;
+      if (f.arguments) call.args += typeof f.arguments === 'string' ? f.arguments : JSON.stringify(f.arguments);
+    });
     if (c.finish_reason) msg.finish = c.finish_reason;
   }
-  if (d.usage) msg.usage = { input: d.usage.prompt_tokens ?? d.usage.input_tokens ?? 0, output: d.usage.completion_tokens ?? d.usage.output_tokens ?? 0 };
+  if (d.usage) step.usage = { input: d.usage.prompt_tokens ?? d.usage.input_tokens ?? 0, output: d.usage.completion_tokens ?? d.usage.output_tokens ?? 0 };
 }
 
-function applyAnthropic(msg, d) {
-  const block = b => {
+function applyAnthropic(msg, d, step) {
+  // Blocks are kept as they arrive: with tools, thinking blocks (and their signatures) go back unchanged.
+  const start = (b, i) => {
     if (!b) return;
-    if (b.type === 'text') msg.content += b.text || '';
-    else if (b.type === 'thinking') msg.reasoning = (msg.reasoning ? msg.reasoning + '\n\n' : '') + (b.thinking || '');
+    const block = { ...b };
+    if (b.type === 'tool_use') block.json = '';
+    if (b.type === 'thinking') step.sepThought = true;
+    step.blocks[i] = block;
+    if (b.type === 'text') addText(msg, step, b.text);
+    else if (b.type === 'thinking') addReasoning(msg, step, b.thinking);
   };
   const usage = u => {
     if (!u) return;
     const input = (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0);
-    const prev = msg.usage || {};
-    msg.usage = { input: input || prev.input || 0, output: u.output_tokens ?? prev.output ?? 0 };
+    const prev = step.usage || {};
+    step.usage = { input: input || prev.input || 0, output: u.output_tokens ?? prev.output ?? 0 };
   };
   switch (d.type) {
     case 'error': throw new Error(errText(d.error));
     case 'message': // non-streaming response
-      (d.content || []).forEach(block);
+      (d.content || []).forEach(start);
       msg.finish = d.stop_reason;
       usage(d.usage);
       break;
     case 'message_start': usage(d.message && d.message.usage); break;
-    case 'content_block_start': block(d.content_block); break;
+    case 'content_block_start': start(d.content_block, d.index); break;
     case 'content_block_delta': {
       const x = d.delta || {};
-      if (x.type === 'text_delta') msg.content += x.text || '';
-      else if (x.type === 'thinking_delta') msg.reasoning = (msg.reasoning || '') + (x.thinking || '');
+      const b = step.blocks[d.index] || (step.blocks[d.index] = { type: x.type === 'thinking_delta' ? 'thinking' : 'text' });
+      if (x.type === 'text_delta') { b.text = (b.text || '') + (x.text || ''); addText(msg, step, x.text); }
+      else if (x.type === 'thinking_delta') { b.thinking = (b.thinking || '') + (x.thinking || ''); addReasoning(msg, step, x.thinking); }
+      else if (x.type === 'signature_delta') b.signature = (b.signature || '') + (x.signature || '');
+      else if (x.type === 'input_json_delta') b.json = (b.json || '') + (x.partial_json || '');
       break;
     }
     case 'message_delta':
@@ -1296,19 +1393,76 @@ function applyAnthropic(msg, d) {
   }
 }
 
-// Sends the chat to the model and fills `msg` as the response arrives.
+// The tool calls the model made in one round, with parsed arguments (null when they aren't valid JSON).
+function toolCalls(step, anthropic) {
+  const parse = s => {
+    try {
+      const v = JSON.parse(s || '{}');
+      return v && typeof v === 'object' && !Array.isArray(v) ? v : null;
+    } catch (e) { return null; }
+  };
+  if (anthropic) return step.blocks.filter(b => b && b.type === 'tool_use').map(b => ({ id: b.id, name: b.name, args: b.json ? parse(b.json) : b.input || {} }));
+  return step.calls.filter(c => c && c.name).map((c, i) => ({ id: c.id || `call_${i}`, name: c.name, args: parse(c.args), raw: c.args }));
+}
+
+// The model's turn that asked for the tools, as each API wants it repeated.
+const openaiToolTurn = (step, calls) => ({
+  role: 'assistant',
+  content: step.text,
+  tool_calls: calls.map(c => ({ id: c.id, type: 'function', function: { name: c.name, arguments: c.raw || JSON.stringify(c.args || {}) } })),
+});
+function anthropicToolTurn(step, calls) {
+  const args = new Map(calls.map(c => [c.id, c.args]));
+  const content = [];
+  for (const b of step.blocks) {
+    if (!b) continue;
+    const { json, ...block } = b;
+    if (block.type === 'text' && !block.text) continue;
+    if (block.type === 'tool_use') block.input = args.get(block.id) || {};
+    content.push(block);
+  }
+  return { role: 'assistant', content };
+}
+
+const MAX_TOOL_ROUNDS = 8;
+
+// Sends the chat to the model and fills `msg` as the response arrives. With web access on, the model can
+// call web_search and web_fetch: they run here in the browser, and the results go back to the model
+// until it answers.
 async function complete({ provider, model }, options, history, msg, onUpdate, signal) {
-  const req = buildRequest(provider, model, options, history);
-  const res = await request(req.url, { method: 'POST', headers: req.headers, body: JSON.stringify(req.body), signal });
-  if (!res.ok) throw new Error(await httpError(res));
-  const apply = provider.type === 'anthropic' ? applyAnthropic : applyOpenAI;
-  if (req.body.stream && res.body && !/json/i.test(res.headers.get('content-type') || '')) {
-    for await (const data of sse(res)) {
-      apply(msg, data);
-      onUpdate();
+  const anthropic = provider.type === 'anthropic';
+  const turn = { tools: options.web ? webTools() : [], extra: [], system: options.web ? webInstructions(true) : '' };
+  for (let round = 0; ; round++) {
+    turn.final = round === MAX_TOOL_ROUNDS; // the last round has to answer
+    const req = buildRequest(provider, model, options, history, turn);
+    const res = await request(req.url, { method: 'POST', headers: req.headers, body: JSON.stringify(req.body), signal });
+    if (!res.ok) {
+      const error = await httpError(res);
+      // A model or server without tool support: look things up first and hand the results over instead.
+      if (round === 0 && turn.tools.length && res.status === 400 && /tool/i.test(error)) {
+        turn.tools = [];
+        turn.system = await webContext(history, msg, onUpdate, signal);
+        continue;
+      }
+      throw new Error(error);
     }
-  } else {
-    apply(msg, await res.json());
+    const step = { calls: [], blocks: [], text: '', usage: null, sepText: !!msg.content.trim(), sepThought: !!msg.reasoning };
+    const apply = anthropic ? applyAnthropic : applyOpenAI;
+    if (req.body.stream && res.body && !/json/i.test(res.headers.get('content-type') || '')) {
+      for await (const data of sse(res)) {
+        apply(msg, data, step);
+        onUpdate();
+      }
+    } else {
+      apply(msg, await res.json(), step);
+    }
+    addUsage(msg, step.usage);
+    const calls = toolCalls(step, anthropic);
+    if (!calls.length || !turn.tools.length || turn.final) return;
+    turn.extra.push(anthropic ? anthropicToolTurn(step, calls) : openaiToolTurn(step, calls));
+    const results = await Promise.all(calls.map(c => runTool(c, msg, onUpdate, signal)));
+    if (anthropic) turn.extra.push({ role: 'user', content: results.map(r => ({ type: 'tool_result', tool_use_id: r.id, content: r.content })) });
+    else turn.extra.push(...results.map(r => ({ role: 'tool', tool_call_id: r.id, content: r.content })));
   }
 }
 
@@ -1345,6 +1499,155 @@ async function readImage(file) {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
   return canvas.toDataURL('image/jpeg', 0.9);
+}
+
+// ---------- Web access: the web_search and web_fetch tools ----------
+// The search services and the page reader below all accept requests from web pages.
+const WEB_TOOLS = [
+  {
+    name: 'web_search',
+    description: 'Search the web. Returns the title, URL and an excerpt of each result.',
+    parameters: { type: 'object', properties: { query: { type: 'string', description: 'What to search for' } }, required: ['query'] },
+  },
+  {
+    name: 'web_fetch',
+    description: 'Read a web page, PDF or other online document and return its main text as Markdown. Use it to read a search result in full, or a link from the user.',
+    parameters: { type: 'object', properties: { url: { type: 'string', description: 'The http or https URL to read' } }, required: ['url'] },
+  },
+];
+const WEB_SITES = { tavily: 'tavily.com', jina: 'jina.ai', serper: 'serper.dev', bocha: 'bochaai.com', zhipu: 'bigmodel.cn' };
+const webSearchReady = () => !!(settings.web.provider && settings.web.keys[settings.web.provider]);
+const webTools = () => WEB_TOOLS.filter(x => x.name === 'web_fetch' || webSearchReady());
+
+function webInstructions(tools, results) {
+  const today = `Today is ${new Date().toLocaleDateString('en-CA')}.`;
+  if (tools) return `${today} You can search the web with web_search and read pages with web_fetch. Use them for anything recent, specific or that you're unsure about, and cite the pages you used as Markdown links.`;
+  return results ? `${today} Web results for the user's latest message follow. Use them where they help, and cite the pages you used as Markdown links.\n\n${results}` : today;
+}
+
+const web = (() => {
+  const RESULTS = 6;
+  const json = { 'Content-Type': 'application/json' };
+  const bearer = key => (key ? { Authorization: 'Bearer ' + key } : {});
+  async function call(url, init, signal) {
+    let res;
+    try {
+      res = await fetch(url, { ...init, signal });
+    } catch (e) {
+      if (e.name === 'AbortError') throw e;
+      throw new Error(t('webUnreachable', new URL(url).host));
+    }
+    const text = await res.text();
+    let data = null;
+    try { data = JSON.parse(text); } catch (e) { /* not JSON */ }
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${(data && errText(data)) || text.replace(/\s+/g, ' ').slice(0, 200)}`);
+    if (!data || typeof data !== 'object') throw new Error(t('webBadResponse'));
+    return data;
+  }
+  // Each service's results as [{ title, url, text, date }].
+  const SEARCH = {
+    async tavily(q, key, signal) {
+      const d = await call('https://api.tavily.com/search', { method: 'POST', headers: { ...json, ...bearer(key) }, body: JSON.stringify({ query: q, max_results: RESULTS }) }, signal);
+      return (d.results || []).map(r => ({ title: r.title, url: r.url, text: r.content, date: r.published_date }));
+    },
+    async jina(q, key, signal) {
+      const d = await call('https://s.jina.ai/?q=' + encodeURIComponent(q), { headers: { Accept: 'application/json', 'X-Respond-With': 'no-content', ...bearer(key) } }, signal);
+      return (Array.isArray(d.data) ? d.data : []).map(r => ({ title: r.title, url: r.url, text: r.description || r.content, date: r.date }));
+    },
+    async serper(q, key, signal) {
+      const d = await call('https://google.serper.dev/search', { method: 'POST', headers: { ...json, 'X-API-KEY': key }, body: JSON.stringify({ q, num: RESULTS }) }, signal);
+      return (d.organic || []).map(r => ({ title: r.title, url: r.link, text: r.snippet, date: r.date }));
+    },
+    async bocha(q, key, signal) {
+      const d = await call('https://api.bochaai.com/v1/web-search', { method: 'POST', headers: { ...json, ...bearer(key) }, body: JSON.stringify({ query: q, summary: true, count: RESULTS }) }, signal);
+      return ((d.data && d.data.webPages && d.data.webPages.value) || []).map(r => ({ title: r.name, url: r.url, text: r.summary || r.snippet, date: r.datePublished }));
+    },
+    async zhipu(q, key, signal) {
+      const d = await call('https://open.bigmodel.cn/api/paas/v4/web_search', { method: 'POST', headers: { ...json, ...bearer(key) }, body: JSON.stringify({ search_query: q, search_engine: 'search_std', count: RESULTS }) }, signal);
+      return (d.search_result || []).map(r => ({ title: r.title, url: r.link, text: r.content, date: r.publish_date }));
+    },
+  };
+  async function search(query, signal) {
+    const { provider, keys } = settings.web;
+    const list = await SEARCH[provider](query, keys[provider], signal);
+    return list.filter(r => r && r.url).slice(0, RESULTS)
+      .map(r => ({ title: String(r.title || ''), url: String(r.url), text: String(r.text || ''), date: r.date ? String(r.date) : '' }));
+  }
+  // Pages are read with Tavily when that's the search service, otherwise with Jina Reader (no key needed).
+  async function read(url, signal) {
+    const { provider, keys } = settings.web;
+    if (provider === 'tavily' && keys.tavily) {
+      const d = await call('https://api.tavily.com/extract', { method: 'POST', headers: { ...json, ...bearer(keys.tavily) }, body: JSON.stringify({ urls: [url] }) }, signal);
+      const r = (d.results || [])[0];
+      if (!r) throw new Error(((d.failed_results || [])[0] || {}).error || t('webBadResponse'));
+      return { title: String(r.title || ''), url: String(r.url || url), text: String(r.raw_content || '') };
+    }
+    const d = await call('https://r.jina.ai/' + url, { headers: { Accept: 'application/json', 'X-Retain-Images': 'none', ...bearer(provider === 'jina' ? keys.jina : '') } }, signal);
+    const page = d.data || {};
+    return { title: String(page.title || ''), url: String(page.url || url), text: String(page.content || '') };
+  }
+  return { search, read };
+})();
+
+const clip = (s, n) => (s.length > n ? s.slice(0, n) + '…' : s);
+function searchText(query, results) {
+  if (!results.length) return `No results for "${query}".`;
+  return results.map((r, i) => `[${i + 1}] ${r.title || r.url}\n${r.url}${r.date ? '\n' + r.date : ''}\n${clip(r.text.replace(/\s+/g, ' ').trim(), 600)}`).join('\n\n');
+}
+const DENSE_SCRIPT = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/gu;
+function pageText(page) {
+  let text = page.text.trim();
+  if (!text) return `${page.url}\n\nThe page has no readable text.`;
+  // Long pages are cut so they don't fill the context. Chinese, Japanese and Korean use more tokens per character.
+  const limit = (text.slice(0, 4000).match(DENSE_SCRIPT) || []).length > 1000 ? 8000 : 16000;
+  if (text.length > limit) text = `${text.slice(0, limit)}\n\n[Showing the first ${limit} of ${text.length} characters.]`;
+  return `${page.title ? page.title + '\n' : ''}${page.url}\n\n${text}`;
+}
+
+// Runs one tool call for the model and records it in msg.steps, which the message shows.
+async function runTool(call, msg, onUpdate, signal) {
+  const a = call.args || {};
+  const step = call.name === 'web_search' ? { type: 'search', query: String(a.query || '').trim() }
+    : call.name === 'web_fetch' ? { type: 'fetch', url: String(a.url || '').trim() } : null;
+  if (!step) return { id: call.id, content: `Error: there is no tool named ${call.name}.` };
+  step.status = 'running';
+  (msg.steps = msg.steps || []).push(step);
+  onUpdate();
+  let content;
+  try {
+    if (!call.args) throw new Error(t('webBadArgs'));
+    if (step.type === 'search') {
+      if (!step.query) throw new Error(t('webBadArgs'));
+      if (!webSearchReady()) throw new Error(t('webNoSearchService'));
+      const results = await web.search(step.query, signal);
+      step.results = results.map(r => ({ title: r.title, url: r.url }));
+      content = searchText(step.query, results);
+    } else {
+      if (!/^https?:\/\/\S+$/i.test(step.url)) throw new Error(t('webBadUrl'));
+      const page = await web.read(step.url, signal);
+      step.title = page.title;
+      content = pageText(page);
+    }
+    step.status = 'done';
+  } catch (e) {
+    step.status = 'error';
+    step.error = e.name === 'AbortError' ? t('stopped') : e.message || String(e);
+    if (e.name === 'AbortError') { onUpdate(); throw e; }
+    content = `Error: ${step.error}`;
+  }
+  onUpdate();
+  return { id: call.id, content };
+}
+
+// For models that can't call tools: links in the latest message are read and the message is searched
+// for, and the results go into the system prompt.
+async function webContext(history, msg, onUpdate, signal) {
+  const last = history[history.length - 1];
+  const text = (last && typeof last.content === 'string' ? last.content : '').replace(/<file name="[^"]*">[\s\S]*?<\/file>/g, '').trim();
+  const calls = [...new Set(text.match(/https?:\/\/[^\s<>"'`）】」]+/g) || [])].slice(0, 2).map((url, i) => ({ id: 'url' + i, name: 'web_fetch', args: { url } }));
+  if (text && webSearchReady()) calls.push({ id: 'search', name: 'web_search', args: { query: text.slice(0, 200) } });
+  const results = await Promise.all(calls.map(c => runTool(c, msg, onUpdate, signal)));
+  return webInstructions(false, results.map(r => r.content).join('\n\n---\n\n'));
 }
 
 // ---------- Documents: plain-text extraction for PDF, Word, Excel, PowerPoint and text files ----------
@@ -2098,7 +2401,7 @@ const ui = {
   list: $('#chat-list'), search: $('#search'), model: $('#model-select'),
   scroller: $('#scroller'), msgs: $('#msgs'), input: $('#input'), send: $('#send'),
   thumbs: $('#thumbs'), composer: $('#composer'), toBottom: $('#to-bottom'), fileInput: $('#file-input'), docInput: $('#doc-input'),
-  effort: $('#effort-select'), effortBox: $('#effort'), effortValue: $('#effort-value'),
+  effort: $('#effort-select'), effortBox: $('#effort'), effortValue: $('#effort-value'), web: $('#web-toggle'),
   dlgChat: $('#dlg-chat'), dlgSettings: $('#dlg-settings'), dlgProvider: $('#dlg-provider'), dlgImg: $('#dlg-img'), dlgFile: $('#dlg-file'),
 };
 const state = {
@@ -2189,6 +2492,7 @@ function renderModelSelect() {
   sel.append(new Option(t('manageProviders'), '__manage'));
   fitModelSelect();
   renderEffort();
+  renderWebToggle();
 }
 
 // A <select> is as wide as its longest option; size it to the selected one instead.
@@ -2261,7 +2565,9 @@ function renderAssistant(el, chat, msg) {
   const bubble = el.querySelector('.bubble');
   const view = msg.reasoning ? { reasoning: msg.reasoning, content: msg.content } : splitThink(msg.content) || { reasoning: '', content: msg.content };
   const hasContent = !!view.content.trim();
-  const thinking = live && !hasContent;
+  const steps = msg.steps || [];
+  const running = steps.find(x => x.status === 'running');
+  const thinking = live && !hasContent && !running;
 
   let think = bubble.querySelector('.think');
   if (view.reasoning) {
@@ -2281,6 +2587,24 @@ function renderAssistant(el, chat, msg) {
     think.remove();
   }
 
+  // Searches and pages the model looked at, with links to the sources.
+  let tools = bubble.querySelector('.tools');
+  if (steps.length) {
+    if (!tools) {
+      tools = document.createElement('details');
+      tools.className = 'tools';
+      tools.innerHTML = `<summary>${icon('down')}<span></span></summary><ol class="steps"></ol>`;
+      const before = bubble.querySelector('.think');
+      if (before) before.after(tools);
+      else bubble.prepend(tools);
+    }
+    tools.classList.toggle('live', !!running);
+    tools.querySelector('summary span').textContent = running ? stepLabel(running) : stepsSummary(steps);
+    tools.querySelector('.steps').innerHTML = steps.map(stepHtml).join('');
+  } else if (tools) {
+    tools.remove();
+  }
+
   let content = bubble.querySelector('.content');
   if (hasContent) {
     if (!content) {
@@ -2294,7 +2618,7 @@ function renderAssistant(el, chat, msg) {
   }
 
   bubble.querySelectorAll('.typing, .err, .notice').forEach(n => n.remove());
-  if (live && !hasContent && !view.reasoning) bubble.insertAdjacentHTML('beforeend', '<div class="typing"><span></span><span></span><span></span></div>');
+  if (live && !hasContent && !view.reasoning && !steps.length) bubble.insertAdjacentHTML('beforeend', '<div class="typing"><span></span><span></span><span></span></div>');
   if (msg.error) {
     const err = document.createElement('div');
     err.className = 'err';
@@ -2304,6 +2628,24 @@ function renderAssistant(el, chat, msg) {
   const note = live ? '' : msg.stopped ? 'stopped' : FINISH_NOTES.hasOwnProperty(msg.finish) ? FINISH_NOTES[msg.finish] : '';
   if (note) bubble.insertAdjacentHTML('beforeend', `<div class="notice">${esc(t(note))}</div>`);
   renderFoot(el.querySelector('.msg-foot'), chat, msg);
+}
+
+const urlHost = url => { try { return new URL(url).host.replace(/^www\./, ''); } catch (e) { return url; } };
+const linkTo = (url, text) => (/^https?:\/\//i.test(url) ? `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>` : esc(text));
+const stepLabel = x => (x.type === 'search' ? t('searchingFor', x.query) : t('readingUrl', urlHost(x.url)));
+function stepsSummary(steps) {
+  const searches = steps.filter(x => x.type === 'search').length;
+  const pages = steps.length - searches;
+  return [searches && t(searches === 1 ? 'searchOne' : 'searchN', searches), pages && t(pages === 1 ? 'pageOne' : 'pageN', pages)].filter(Boolean).join(' · ');
+}
+function stepHtml(x) {
+  const err = x.status === 'error' ? `<div class="step-err">${esc(x.error || '')}</div>` : '';
+  if (x.type === 'search') {
+    const list = (x.results || []).map(r => `<li>${linkTo(r.url, r.title || r.url)} <span class="host">${esc(urlHost(r.url))}</span></li>`).join('');
+    const count = x.results ? ` <span class="host">${esc(t('resultsN', x.results.length))}</span>` : '';
+    return `<li>${icon('search')}<div><div>${esc(x.query)}${count}</div>${list ? `<ul>${list}</ul>` : ''}${err}</div></li>`;
+  }
+  return `<li>${icon('file')}<div><div>${linkTo(x.url, x.title || x.url)} <span class="host">${esc(urlHost(x.url))}</span></div>${err}</div></li>`;
 }
 
 function renderFoot(foot, chat, msg) {
@@ -2382,6 +2724,12 @@ function renderEffort() {
   ui.effort.value = value;
   ui.effortValue.textContent = effortLabel(value);
   ui.effortBox.classList.toggle('on', !!value);
+}
+
+function renderWebToggle() {
+  const on = !!state.current.options.web;
+  ui.web.classList.toggle('on', on);
+  ui.web.setAttribute('aria-pressed', String(on));
 }
 
 function autosize(el = ui.input) {
@@ -2611,6 +2959,7 @@ function openSettings() {
   $('#set-theme').value = settings.theme;
   $('#set-lang').value = settings.lang;
   $('#set-send').value = settings.sendKey;
+  renderWebSettings();
   $('#version').textContent = t('version', VERSION);
   if (!ui.dlgSettings.open) ui.dlgSettings.showModal();
 }
@@ -2636,6 +2985,25 @@ $('#set-lang').onchange = e => {
   openSettings();
 };
 $('#set-send').onchange = e => { settings.sendKey = e.target.value; saveSettings(); };
+
+function renderWebSettings() {
+  const { provider, keys } = settings.web;
+  $('#set-web').value = provider;
+  $('#set-web-key').value = keys[provider] || '';
+  $('#web-key-field').hidden = !provider;
+  $('#web-hint').textContent = !provider ? t('webHintNone') : provider === 'tavily' ? t('webHintTavily')
+    : provider === 'jina' ? t('webHintJina') : t('webHintOther', WEB_SITES[provider]);
+}
+$('#set-web').onchange = e => {
+  settings.web.provider = e.target.value;
+  saveSettings();
+  renderWebSettings();
+};
+$('#set-web-key').oninput = e => {
+  if (!settings.web.provider) return;
+  settings.web.keys[settings.web.provider] = e.target.value.trim();
+  saveSettings();
+};
 
 $('#btn-export').onclick = () => {
   const data = { app: 'JustChat', version: 1, exportedAt: new Date().toISOString(), settings, chats: state.chats };
@@ -3018,6 +3386,15 @@ ui.effort.addEventListener('change', () => {
   saveChat(chat);
   renderEffort();
 });
+ui.web.onclick = () => {
+  const chat = state.current;
+  chat.options.web = !chat.options.web;
+  settings.defaults.web = chat.options.web; // like the reasoning effort, the last choice carries over to new chats
+  saveSettings();
+  saveChat(chat);
+  renderWebToggle();
+  if (chat.options.web && !webSearchReady()) toast(t('webNoSearch'), 6000);
+};
 ui.fileInput.onchange = () => {
   addImages([...ui.fileInput.files]);
   ui.fileInput.value = '';

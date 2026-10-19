@@ -24,11 +24,11 @@ Open it in a browser, add your API, and start chatting.<br>No build step, no dep
 <table>
   <tr>
     <td width="50%" valign="top"><b>🔌 Bring your own models</b><br>Any OpenAI-compatible API (OpenAI, DeepSeek, OpenRouter, Ollama, vLLM, LM Studio, …) and the Anthropic API. Add as many providers as you like and switch models per chat.</td>
-    <td width="50%" valign="top"><b>💬 Made for conversation</b><br>Streaming replies, Markdown with tables and highlighted code, and editing or regenerating any message.</td>
+    <td width="50%" valign="top"><b>💬 Made for conversation</b><br>Streaming replies, visible reasoning with an effort control next to the message box, Markdown with tables and highlighted code, and editing or regenerating any message.</td>
   </tr>
   <tr>
     <td width="50%" valign="top"><b>📎 Images and documents</b><br>Attach images, PDF, Word, Excel, PowerPoint and text files. Documents are read in your browser and sent as text, so they work with any model.</td>
-    <td width="50%" valign="top"><b>💡 Reasoning</b><br>Set the reasoning effort right next to the message box, and expand the model's thinking as it streams.</td>
+    <td width="50%" valign="top"><b>🌐 Web search</b><br>The model can search the web and read pages and PDFs, then answer with links to its sources. Works with any model that can call tools.</td>
   </tr>
   <tr>
     <td width="50%" valign="top"><b>🎛️ Your settings, per chat</b><br>System prompt, temperature, top P, max tokens, context length and streaming, for each chat or as defaults.</td>
@@ -36,7 +36,7 @@ Open it in a browser, add your API, and start chatting.<br>No build step, no dep
   </tr>
   <tr>
     <td width="50%" valign="top"><b>📱 Everywhere</b><br>Desktop and phone layouts, light and dark themes, English and Chinese, and Add to Home Screen.</td>
-    <td width="50%" valign="top"><b>🪶 Tiny</b><br>One HTML file of about 150 KB. Open it from disk or host it anywhere.</td>
+    <td width="50%" valign="top"><b>🪶 Tiny</b><br>One HTML file of about 175 KB. Open it from disk or host it anywhere.</td>
   </tr>
 </table>
 
@@ -81,6 +81,17 @@ Attach files with the buttons under the message box, by dropping them onto the c
 | Text | Markdown, CSV, JSON, HTML, source code and other plain text (UTF-8, UTF-16 or GBK) |
 
 Scanned PDFs without a text layer and password-protected PDFs can't be read, and old `.doc`, `.xls` and `.ppt` files need to be saved in the newer format first. Files can be up to 30 MB each. Long documents take up much of the model's context window.
+
+## Web search
+
+Turn on **Web** under the message box, and the model can look things up while it answers:
+
+- `web_search` searches with the service you choose in **Settings → Web access**: Tavily, Jina, Serper (Google results), Bocha (博查) or Zhipu (智谱). Each needs an API key from that service.
+- `web_fetch` reads a web page, PDF or other online document. Pages are read with Jina Reader, which works without a key (with a rate limit), or with Tavily when that's your search service. Without a search service, the model can still read links you send it.
+
+The reply shows what the model searched for and which pages it read, with links to the sources. The switch is saved with each chat, and new chats start with your last choice.
+
+The model needs to support tool calls, as most current models do; self-hosted vLLM needs `--enable-auto-tool-choice` and a `--tool-call-parser` for the model. Models without tool calls are given search results for your message before they answer. Pages behind a login can't be read, and long pages are shortened before the model sees them.
 
 ## Configuration
 
@@ -135,12 +146,13 @@ While editing a message, <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd> sav
 - Chats and settings, API keys included, are stored only in your browser (IndexedDB). Host JustChat on its own domain or subdomain, because other pages on the same origin could read them.
 - JustChat only talks to the APIs you add. Images in model replies are loaded from their URLs.
 - Attached files are read in your browser and sent to the API as part of your message, documents as plain text. They're saved with the chat, so exports include them too.
+- With web search on, search queries go to the search service you chose, and pages the model reads are fetched by Jina Reader or Tavily.
 - Exports contain everything, API keys included.
 - Browsers may clear data of sites you haven't used for a while, Safari especially. Export now and then; on iOS, adding the page to the Home Screen helps.
 
 ## Development
 
-Everything lives in `index.html`: the styles, the markup and one script organized in sections (utilities, i18n, storage, Markdown, API, documents, UI). There is nothing to install or build. Edit the file and reload.
+Everything lives in `index.html`: the styles, the markup and one script organized in sections (utilities, i18n, storage, Markdown, API, web access, documents, UI). There is nothing to install or build. Edit the file and reload.
 
 To add a UI language, add an entry to the `I18N` object and an option to the language select.
 
